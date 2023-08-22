@@ -1,0 +1,6 @@
+#Ignore all credentials
+Credenciales.py
+#Ignore all the cache
+**/__pycache__/
+#Ignore Assets
+/assets
