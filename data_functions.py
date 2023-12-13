@@ -65,7 +65,6 @@ def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
     
   concatenated_df = pd.concat([list_registers[0], list_registers[1], list_registers[2], list_registers[3], list_registers[4], list_registers[5], list_registers[6], list_registers[7], list_registers[8], list_registers[9]], axis=0)
   concatenated_df = concatenated_df.reset_index(drop=True)
-
   return concatenated_df
 
 '''

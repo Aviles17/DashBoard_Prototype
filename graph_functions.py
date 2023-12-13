@@ -33,7 +33,18 @@ def create_supertrend_graph(plot_df: pd.DataFrame, symbol: str):
     
     return fig
 
-def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, symbol: str):
+def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, symbol: str, side: str):
+    if(side == 'Buy'):
+        y_array = plot_df['ST_Inferior']
+        color = 'cyan'
+    elif(side == 'Sell'):
+        y_array = plot_df['ST_Superior']
+        print(y_array)
+        color = 'magenta'
+    else:
+        y_array = [0] * len(plot_df['Time'])
+        color = 'white'
+        
     arr_entry = [entry] * len(plot_df['Time'])
     arr_stoploss = [stoploss] * len(plot_df['Time'])
     if(entry != 0 and stoploss != 0):
@@ -43,9 +54,10 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                                             low=plot_df['Low'],
                                             close=plot_df['Close'],
                                             hovertext = True,
-                                            name='ETHUSDT'),
+                                            name=symbol),
                             go.Scatter(x=plot_df['Time'], y=arr_entry, mode='lines', name='Entry-Profit', line={'color': 'green'}),
-                            go.Scatter(x=plot_df['Time'], y=arr_stoploss, mode='lines', name='Stoploss', line={'color': 'red'})])
+                            go.Scatter(x=plot_df['Time'], y=arr_stoploss, mode='lines', name='Stoploss', line={'color': 'red'}),
+                            go.Scatter(x=plot_df['Time'], y=y_array, mode='lines', name='Supertrend', line={'color': color})])
         fig.update_layout(title=f'{symbol} Supertrend',
                     title_font=dict(color='white'),
                     xaxis_rangeslider_visible=True,
@@ -71,7 +83,7 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                                             low=plot_df['Low'],
                                             close=plot_df['Close'],
                                             hovertext = True,
-                                            name='ETHUSDT')])
+                                            name=symbol)])
         
         fig.update_layout(title=f'{symbol} Supertrend',
                     title_font=dict(color='white'),

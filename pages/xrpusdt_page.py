@@ -29,7 +29,7 @@ def xrpusdt_page_layout():
     
     graph_3 = dcc.Graph(
         id="graph_3",
-        figure = gf.create_order_graph(df,0,0,'XRPUSDT')
+        figure = gf.create_order_graph(df,0,0,'XRPUSDT', None)
     )
     
     kpi5 = kpi("KPI 1", "Value 1",5)
@@ -80,7 +80,7 @@ def xrpusdt_page_layout():
 def update_content(user_input):
     if user_input == 'Long':
         size, entry, stoploss, pyl = dt.get_position("Buy",'XRPUSDT',df)
-        figure_3 = gf.create_order_graph(df,float(entry),float(stoploss),'XRPUSDT')
+        figure_3 = gf.create_order_graph(df,float(entry),float(stoploss),'XRPUSDT','Buy')
         graph_3 = {
             'data': figure_3.data,
             'layout': figure_3.layout
@@ -93,7 +93,7 @@ def update_content(user_input):
         
     elif user_input == 'Short':
         size, entry, stoploss, pyl = dt.get_position("Sell",'XRPUSDT',df)
-        figure_3 = gf.create_order_graph(df,float(entry),float(stoploss),'XRPUSDT')
+        figure_3 = gf.create_order_graph(df,float(entry),float(stoploss),'XRPUSDT','Sell')
         graph_3 = {
             'data': figure_3.data,
             'layout': figure_3.layout
