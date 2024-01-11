@@ -3,8 +3,8 @@ import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output
 from dash.exceptions import PreventUpdate
 from components.kpi import kpi
-import data_functions as dt
-import graph_functions as gf
+import Util.data_functions as dt
+import Util.graph_functions as gf
 
 def ethusdt_page_layout():
     # Define the layout for ETH/USDT page
