@@ -7,7 +7,6 @@ import data_functions as dt
 import graph_functions as gf
 
 def ethusdt_page_layout():
-    print('ETHUSDT Page')
     # Define the layout for ETH/USDT page
     global df
     df = dt.get_data('ETHUSDT','15')
@@ -48,7 +47,7 @@ def ethusdt_page_layout():
     layout = dbc.Container([
         dcc.Interval(
         id='graph1-update-interval',
-        interval=60000,  # Update every 5 minutes (in milliseconds)
+        interval=60*1000,  # Update every 5 minutes (in milliseconds)
         n_intervals=0,
         ),
         dbc.Row([
@@ -73,7 +72,7 @@ def ethusdt_page_layout():
             dbc.Col(kpi3.display(), md=3),  # Place KPI 3 in the third column
             dbc.Col(kpi4.display(), md=3),  # Place KPI 4 in the fourth column
         ])
-    ], style={'width': '90%'})
+    ], style={'width': '100%', 'padding': '20px'})
     
     return layout
     
@@ -129,7 +128,6 @@ def update_content(user_input):
     prevent_initial_call=True
 )
 def update_graph1(n_intervals):
-    print("Actualizando gráfica 1")
 
     # Obtenemos los datos actualizados para graph1
     df = dt.get_data('ETHUSDT','15')

@@ -4,3 +4,5 @@ Credenciales.py
 **/__pycache__/
 #Ignore Assets
 /assets
+#Ignore Virtual Environment
+Dashenv/

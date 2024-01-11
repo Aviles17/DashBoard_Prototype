@@ -12,6 +12,7 @@ def xrpusdt_page_layout():
     df = dt.get_clean_data(df)
     
     graph1 = dcc.Graph(
+        id='graphXRP',
         figure=gf.create_supertrend_graph(df,'XRPUSDT')
     )
     # Create a dropdown for user input
@@ -21,7 +22,7 @@ def xrpusdt_page_layout():
             {'label': 'Long Orders', 'value': 'Long'},
             {'label': 'Short Orders', 'value': 'Short'}
         ],
-         style={"color":"black"}
+         style={"color":"black", 'padding': '20px'}
     )
     
     global graph_3 
@@ -41,6 +42,11 @@ def xrpusdt_page_layout():
     
     # Define the overall layout of the page
     layout = dbc.Container([
+        dcc.Interval(
+        id='graphXRP-update-interval',
+        interval=60*1000,  # Update every 5 minutes (in milliseconds)
+        n_intervals=0,
+        ),
         dbc.Row([
             dbc.Col(graph1),  # Place static graph_1 in a single column
         ], className="mb-4"),
@@ -62,8 +68,8 @@ def xrpusdt_page_layout():
             dbc.Col(kpi6.display(), md=3),  # Place KPI 2 in the second column
             dbc.Col(kpi7.display(), md=3),  # Place KPI 3 in the third column
             dbc.Col(kpi8.display(), md=3),  # Place KPI 4 in the fourth column
-        ])
-    ], style={'width': '90%'})
+        ], className= "py-4")
+    ], style={'width': '100%'})
     
     return layout
     
@@ -111,3 +117,21 @@ def update_content(user_input):
         kpi7.set_data("Entry - Profit", "")
         kpi8.set_data("Stoploss", "")
         return graph_3, kpi5.display(), kpi6.display(), kpi7.display(), kpi8.display()
+
+@callback(
+    Output('graphXRP', 'figure'),
+    [Input('graphXRP-update-interval', 'n_intervals')],
+    prevent_initial_call=True
+)
+def update_graph1(n_intervals):
+
+    # Obtenemos los datos actualizados para graph1
+    print('Update XRP')
+    df = dt.get_data('XRPUSDT','15')
+    df = dt.CalculateSupertrend(df)
+    df = dt.get_clean_data(df)
+
+    # Creamos y devolvemos la figura actualizada para graph1
+    graphXRP = gf.create_supertrend_graph(df, 'XRPUSDT')
+
+    return graphXRP
