@@ -41,7 +41,8 @@ def ethusdt_page_layout():
     kpi3 = kpi("KPI 3", "Value 3",3)
     kpi4 = kpi("KPI 4", "Value 4",4)
     
-    title = html.H2("ETH/USDT Positions")
+    title2 = html.H3("ETH/USDT Positions")
+    title1 = html.H3("ETH/USDT Live Chart")
         
     # Define the overall layout of the page
     layout = dbc.Container([
@@ -51,11 +52,15 @@ def ethusdt_page_layout():
         n_intervals=0,
         ),
         dbc.Row([
+            dbc.Col(title1, md=12),  # Place the title in a single column
+        ], className="mb-4"),
+        
+        dbc.Row([
             dbc.Col(graph1),  # Place static graph_1 in a single column
         ], className="mb-4"),
         
         dbc.Row([
-            dbc.Col(title, md=12),  # Place the title in a single column
+            dbc.Col(title2, md=12),  # Place the title in a single column
         ], className="mb-4"),
 
         dbc.Row([

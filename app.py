@@ -6,7 +6,7 @@ from dash.dependencies import Input, Output
 
 from pages import ethusdt_page, xrpusdt_page, home_page
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.DARKLY],suppress_callback_exceptions=True)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG],suppress_callback_exceptions=True)
 
 # Sidebar style
 SIDEBAR_STYLE = {

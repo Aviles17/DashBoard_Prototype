@@ -22,7 +22,7 @@ def xrpusdt_page_layout():
             {'label': 'Long Orders', 'value': 'Long'},
             {'label': 'Short Orders', 'value': 'Short'}
         ],
-         style={"color":"black", 'padding': '20px'}
+         style={"color":"black"}
     )
     
     global graph_3 
@@ -38,7 +38,8 @@ def xrpusdt_page_layout():
     kpi7 = kpi("KPI 3", "Value 3",7)
     kpi8 = kpi("KPI 4", "Value 4",8)
     
-    title = html.H2("XRP/USDT Positions")
+    title1 = html.H3("XRP/USDT Live Chart")
+    title2 = html.H3("XRP/USDT Positions")
     
     # Define the overall layout of the page
     layout = dbc.Container([
@@ -48,11 +49,15 @@ def xrpusdt_page_layout():
         n_intervals=0,
         ),
         dbc.Row([
+            dbc.Col(title1, md=12),  # Place the title in a single column
+        ], className="mb-4"),
+        
+        dbc.Row([
             dbc.Col(graph1),  # Place static graph_1 in a single column
         ], className="mb-4"),
         
         dbc.Row([
-            dbc.Col(title, md=12),  # Place the title in a single column
+            dbc.Col(title2, md=12),  # Place the title in a single column
         ], className="mb-4"),
 
         dbc.Row([
@@ -68,8 +73,8 @@ def xrpusdt_page_layout():
             dbc.Col(kpi6.display(), md=3),  # Place KPI 2 in the second column
             dbc.Col(kpi7.display(), md=3),  # Place KPI 3 in the third column
             dbc.Col(kpi8.display(), md=3),  # Place KPI 4 in the fourth column
-        ], className= "py-4")
-    ], style={'width': '100%'})
+        ])
+    ], style={'width': '100%', 'padding': '20px'})
     
     return layout
     

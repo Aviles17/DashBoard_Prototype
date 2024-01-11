@@ -8,27 +8,30 @@ def create_supertrend_graph(plot_df: pd.DataFrame, symbol: str):
                                      low=plot_df['Low'],
                                      close=plot_df['Close'],
                                      hovertext = True,
-                                     name='ETHUSDT'),
-                      go.Scatter(x=plot_df['Time'], y=plot_df['Supertrend'], mode='lines', name='SuperTrend', line={'color': 'grey'}),
+                                     name='ETHUSDT',
+                                     increasing_line_color= 'cyan', 
+                                     decreasing_line_color= 'mediumorchid'),
                       go.Scatter(x=plot_df['Time'], y=plot_df['ST_Inferior'], mode='lines', name='Buy', line={'color': 'cyan'}),
-                      go.Scatter(x=plot_df['Time'], y=plot_df['ST_Superior'], mode='lines', name='Sell', line={'color': 'magenta'}),
-                      go.Scatter(x=plot_df['Time'], y=plot_df['DEMA800'], mode='lines', name='DEMA800', line={'color': 'black'})])
-    fig.update_layout(title=f'{symbol} Supertrend',
-                    title_font=dict(color='white'),
-                    xaxis_rangeslider_visible=True,
+                      go.Scatter(x=plot_df['Time'], y=plot_df['ST_Superior'], mode='lines', name='Sell', line={'color': 'mediumorchid'}),
+                      go.Scatter(x=plot_df['Time'], y=plot_df['DEMA800'], mode='lines', name='DEMA800', line={'color': 'limegreen'})])
+    fig.update_layout(xaxis_rangeslider_visible=True,
                     showlegend=False,
-                    plot_bgcolor='lightgrey',
+                    plot_bgcolor='black',
                     xaxis=dict(
-                        showgrid=False, 
-                        zeroline=False, 
-                        tickfont=dict(color='white'),
+                        showgrid=True, 
+                        zeroline=True, 
+                        tickfont=dict(color='dimgray'),
+                        gridcolor='dimgray',
+                        zerolinecolor='dimgray',
                         ),
                     yaxis=dict(
-                        showgrid=False, 
-                        zeroline=False, 
-                        tickfont=dict(color='white'), 
+                        showgrid=True, 
+                        zeroline=True, 
+                        tickfont=dict(color='dimgray'), 
+                        gridcolor='dimgray',
+                        zerolinecolor='dimgray',
                         ),
-                    paper_bgcolor='rgba(34,34,34,1)',
+                    paper_bgcolor='rgba(0,0,0,0)',
                     margin=dict(l=20, r=20, b=20, t=35) )
     
     return fig
@@ -54,15 +57,15 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                                             low=plot_df['Low'],
                                             close=plot_df['Close'],
                                             hovertext = True,
-                                            name=symbol),
+                                            name=symbol,
+                                            increasing_line_color= 'cyan', 
+                                            decreasing_line_color= 'mediumorchid'),
                             go.Scatter(x=plot_df['Time'], y=arr_entry, mode='lines', name='Entry-Profit', line={'color': 'green'}),
                             go.Scatter(x=plot_df['Time'], y=arr_stoploss, mode='lines', name='Stoploss', line={'color': 'red'}),
                             go.Scatter(x=plot_df['Time'], y=y_array, mode='lines', name='Supertrend', line={'color': color})])
-        fig.update_layout(title=f'{symbol} Supertrend',
-                    title_font=dict(color='white'),
-                    xaxis_rangeslider_visible=True,
+        fig.update_layout(xaxis_rangeslider_visible=True,
                     showlegend=False,
-                    plot_bgcolor='lightgrey',
+                    plot_bgcolor='black',
                     xaxis=dict(
                         showgrid=False, 
                         zeroline=False, 
@@ -73,7 +76,7 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                         zeroline=False, 
                         tickfont=dict(color='white'), 
                         ),
-                    paper_bgcolor='rgba(34,34,34,1)',
+                    paper_bgcolor='rgba(0,0,0,0)',
                     margin=dict(l=20, r=20, b=20, t=35) )
         return fig
     else:
@@ -83,13 +86,14 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                                             low=plot_df['Low'],
                                             close=plot_df['Close'],
                                             hovertext = True,
-                                            name=symbol)])
+                                            name=symbol,
+                                            increasing_line_color= 'cyan', 
+                                            decreasing_line_color= 'mediumorchid')])
         
-        fig.update_layout(title=f'{symbol} Supertrend',
-                    title_font=dict(color='white'),
+        fig.update_layout(
                     xaxis_rangeslider_visible=True,
                     showlegend=False,
-                    plot_bgcolor='lightgrey',
+                    plot_bgcolor='black',
                     xaxis=dict(
                         showgrid=False, 
                         zeroline=False, 
@@ -100,7 +104,7 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                         zeroline=False, 
                         tickfont=dict(color='white'), 
                         ),
-                    paper_bgcolor='rgba(34,34,34,1)',
+                    paper_bgcolor='rgba(0,0,0,0)',
                     margin=dict(l=20, r=20, b=20, t=35) )
         return fig
         

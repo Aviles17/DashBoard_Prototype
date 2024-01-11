@@ -125,9 +125,9 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
             entry = position.get('data').get('entry_price')
             stoploss = position.get('data').get('stop_loss')
             if(side == 'Sell'):
-                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100*100)*-1
+                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*-100
             else:
-                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100*100)
+                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*100
             return size, entry, stoploss, pyl
         else:
             return 0, 0, 0, 0
