@@ -2,8 +2,8 @@ from dash import html, dcc, callback
 import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from components.kpi import kpi
-import data_functions as dt
-import graph_functions as gf
+import Util.data_functions as dt
+import Util.graph_functions as gf
 
 def xrpusdt_page_layout():
     global df
