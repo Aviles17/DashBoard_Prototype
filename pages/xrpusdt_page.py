@@ -22,7 +22,7 @@ def xrpusdt_page_layout():
             {'label': 'Long Orders', 'value': 'Long'},
             {'label': 'Short Orders', 'value': 'Short'}
         ],
-         style={"color":"black"}
+        style={"color":"black"}
     )
     
     global graph_3 

@@ -4,8 +4,11 @@ from datetime import datetime
 import time
 import pandas_ta as ta 
 import pytz
-import bybit
+from pybit.unified_trading import HTTP
 import Credenciales as id
+
+global client
+client = HTTP(testnet=False, api_key=id.Api_Key, api_secret=id.Api_Secret)
 
 '''
 ###################################################################################
@@ -14,16 +17,17 @@ import Credenciales as id
 [Retorna]: Retorna valor 'float' del balance de la moneda asignada por parametro en la cuenta
 ###################################################################################
 '''
-def Get_Balance(cliente,symbol: str):
+def Get_Balance(symbol: str):
     filt_Balance = 0
     while(filt_Balance == 0):
-        balance = cliente.Wallet.Wallet_getBalance(coin=symbol).result()
+        balance = client.get_coin_balance(accountType="CONTRACT", coin=symbol)
         if balance is not None:
-            filt_Balance = balance[0].get('result').get(symbol).get('available_balance')
+            filt_Balance = balance["result"]["balance"]["walletBalance"]
         else:
             filt_Balance = 0
             
     return filt_Balance
+
 
 '''
 ###################################################################################
@@ -42,29 +46,30 @@ def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
   since = unixtime
   while(unixtimeinterval != 0):
     start= str(since - unixtimeinterval)
-    url = 'http://api.bybit.com/public/linear/kline?symbol='+symbol+'&interval='+interval+'&from='+str(start)
+    url = 'http://api.bybit.com/v5/market/kline?symbol='+symbol+'&interval='+interval+'&from='+str(start)
     while(True):
       try:
         data = requests.get(url).json()
         break
       except requests.exceptions.ConnectionError as e:
-        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
         time.sleep(10)
       except requests.RequestException as e:
-        print(f"Error occurred: {e}, Retrying in 10 seconds...\n")
         time.sleep(10)
-    df = pd.DataFrame(data['result'])
+    df = pd.DataFrame(data['result']["list"], columns=['Time','Open','High','Low','Close','Volume', 'Turnover'])
+    df['Time'] = pd.to_numeric(df['Time'])
     df = df.drop_duplicates()
-    df['open_time'] = df['open_time'].apply(lambda x: datetime.fromtimestamp(x, tz=pytz.UTC))
+    df['Time'] = df['Time'].apply(lambda x: datetime.fromtimestamp(x / 1000, tz=pytz.UTC))
     target_timezone = pytz.timezone('Etc/GMT+5')
-    df['open_time'] = df['open_time'].apply(lambda x: x.astimezone(target_timezone))
-    df.rename(columns={'open':'Open','high':'High','low':'Low','close':'Close','volume':'Volume','open_time':'Time'}, inplace=True)
-    df = df.drop(columns=['symbol','interval','period','turnover','start_at','id'])
+    df['Time'] = df['Time'].apply(lambda x: x.astimezone(target_timezone))
+    #df.rename(columns={'open':'Open','high':'High','low':'Low','close':'Close','volume':'Volume','open_time':'Time'}, inplace=True)
+    df = df.drop(columns=['Turnover'])
     list_registers.append(df)
     unixtimeinterval = unixtimeinterval - DATA_200
     
   concatenated_df = pd.concat([list_registers[0], list_registers[1], list_registers[2], list_registers[3], list_registers[4], list_registers[5], list_registers[6], list_registers[7], list_registers[8], list_registers[9]], axis=0)
   concatenated_df = concatenated_df.reset_index(drop=True)
+  float_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+  concatenated_df[float_columns] = concatenated_df[float_columns].astype(float)
   return concatenated_df
 
 '''
@@ -90,7 +95,6 @@ def CalculateSupertrend(data: pd.DataFrame):
 
 
 def get_clean_data(df: pd.DataFrame):
-    
     #Limpiar el dataframe
     if df['DEMA800'].isnull().values.any():
         df.dropna(subset=['DEMA800'], inplace=True)
@@ -101,29 +105,21 @@ def get_clean_data(df: pd.DataFrame):
     return df1
 
 def get_order_info(symb: str):
-    client = bybit.bybit(test=False, api_key= id.Api_Key, api_secret=id.Api_Secret)
-    positions = client.LinearPositions.LinearPositions_myPosition().result()
-    data = positions[0].get('result')
-    symbol_res = []
+    positions = client.get_positions(category='linear',symbol= symb)
+    data = positions["result"]["list"]
     for item in data:
-        symbol = item.get('data').get('symbol')
-        if symbol == symb:
-            symbol_res.append(item)
-    return symbol_res
+        if item["size"] != 0:
+            return item
+    return {}
 
 def get_position(side: str, symbol: str, df: pd.DataFrame):
     symbol_res = get_order_info(symbol)
     if len(symbol_res) != 0:
         position = None
-        for item in symbol_res:
-            polar = item.get('data').get('side')
-            p_size = item.get('data').get('size')
-            if side == polar and p_size != 0:
-                position = item
-        if position is not None:
-            size = position.get('data').get('size')
-            entry = position.get('data').get('entry_price')
-            stoploss = position.get('data').get('stop_loss')
+        if side == symbol_res["side"] and symbol_res["size"] != 0:
+            size =  symbol_res["size"]
+            entry =  symbol_res["avgPrice"]
+            stoploss = symbol_res["stopLoss"]
             if(side == 'Sell'):
                 pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*-100
             else:
