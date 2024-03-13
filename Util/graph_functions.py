@@ -8,7 +8,7 @@ def create_supertrend_graph(plot_df: pd.DataFrame, symbol: str):
                                      low=plot_df['Low'],
                                      close=plot_df['Close'],
                                      hovertext = True,
-                                     name='ETHUSDT',
+                                     name=symbol,
                                      increasing_line_color= 'cyan', 
                                      decreasing_line_color= 'mediumorchid'),
                       go.Scatter(x=plot_df['Time'], y=plot_df['ST_Inferior'], mode='lines', name='Buy', line={'color': 'cyan'}),
@@ -107,4 +107,41 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                     paper_bgcolor='rgba(0,0,0,0)',
                     margin=dict(l=20, r=20, b=20, t=35) )
         return fig
-        
+
+def create_history_barplot(plot_df: pd.DataFrame, type: str='Profit'):
+    bar_trace = go.Bar(
+        x=plot_df['Time'],
+        y=plot_df[type],
+        marker=dict(color=['green' if val >= 0 else 'red' for val in plot_df[type]]),  # Color positive values blue and negative values red
+        name='Value'
+    )
+
+    layout = go.Layout(
+        title='Historial de Ordenes ',
+        xaxis=dict(title='Dia'),
+        yaxis=dict(title='Valor')
+    )
+
+    fig = go.Figure(data=[bar_trace], layout=layout)
+
+    return fig
+
+
+def create_kpi_piechart(positive_prop: float, negative_prop: float):
+    
+    pie_trace = go.Pie(
+        labels=['Profit', 'Loss'],
+        values=[positive_prop, negative_prop],
+        marker=dict(colors=['green', 'red']), 
+        hole=0.5,  
+        textinfo='percent+label'  # Display both percentage and label in the hover text
+    )
+
+    layout = go.Layout(
+        title='Profit vs Loss'
+    )
+
+    # Create figure
+    fig = go.Figure(data=[pie_trace], layout=layout)
+    
+    return fig

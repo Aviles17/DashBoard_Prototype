@@ -38,7 +38,6 @@ def Get_Balance(symbol: str):
 ###################################################################################
 '''
 def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
-
   list_registers = []
   DATA_200 = 180000
   now = datetime.now()
@@ -52,8 +51,10 @@ def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
         data = requests.get(url).json()
         break
       except requests.exceptions.ConnectionError as e:
+        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
         time.sleep(10)
       except requests.RequestException as e:
+        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
         time.sleep(10)
     df = pd.DataFrame(data['result']["list"], columns=['Time','Open','High','Low','Close','Volume', 'Turnover'])
     df['Time'] = pd.to_numeric(df['Time'])
@@ -105,11 +106,17 @@ def get_clean_data(df: pd.DataFrame):
     return df1
 
 def get_order_info(symb: str):
+  try:
     positions = client.get_positions(category='linear',symbol= symb)
     data = positions["result"]["list"]
     for item in data:
         if item["size"] != 0:
             return item
+  except Exception as e:
+    print(f"An exception occurred connecting to Bybit 'get_positions' endpoint: {e}")
+  
+  finally:
+    #En el llegado caso de que no retorne nada, se retorna un diccionario vacio
     return {}
 
 def get_position(side: str, symbol: str, df: pd.DataFrame):
@@ -129,3 +136,44 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
             return 0, 0, 0, 0
     else:
         return 0, 0, 0, 0
+  
+def get_position_history():
+  endtime = int(datetime.now().timestamp() * 1000)
+  avg_seven = 604800 * 1000
+  concat_list = []
+  try:
+      for i in range(5):
+        res = client.get_closed_pnl(category="linear", endTime = endtime, limit=100)
+        endtime -= avg_seven
+        concat_list.extend(res["result"]["list"])
+
+      unique_list = [dict(t) for t in {tuple(sorted(d.items())) for d in concat_list}]
+      return unique_list
+  except Exception as e:
+      print(f"An exception occurred connecting to Bybit 'get_closed_pnl' endpoint: {e}")
+      return []
+      
+      
+def get_history():
+  history = get_position_history()
+  if len(history) != 0:
+    proto_dataframe = []
+    for register in history:
+      register_list = []
+      register_list.append(register["createdTime"])
+      register_list.append(float(register["closedPnl"]))
+      if register["side"] == "Buy":
+        pyl = (((float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))/float(register["avgEntryPrice"]))*100)*100
+      else:
+        pyl = (((float(register["avgEntryPrice"]) - float(register["avgExitPrice"]))/float(register["avgEntryPrice"]))*100)*-100
+      register_list.append(pyl)
+      proto_dataframe.append(register_list)
+      
+    df = pd.DataFrame(proto_dataframe, columns=['Time','Profit','P&L'])
+    df = df.sort_values(by='Time')
+    df['P&L'] *= 100
+    df['Time'] = pd.to_datetime(pd.to_numeric(df['Time']), unit='ms')
+    df['Time'] = df['Time'].dt.strftime('%d/%H:%S')
+    return df, df['Profit'].sum(), df['P&L'].mean(), df[df['Profit'] > 0]['Profit'].sum(), df[df['Profit'] < 0]['Profit'].sum()
+      
+        
