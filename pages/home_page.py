@@ -13,7 +13,6 @@ def home_page_layout():
     kpi0 = kpi("Balance Total", str(Get_Balance("USDT")),0)
     kpi1 = kpi("Tendencia",str(trend),1)
     kpi2 = kpi("Total Profit ",str(profit),2)
-    print(positive_prop, negative_prop, profit)
     graph_1 = dcc.Graph(
         id="graph_1",
         figure = gf.create_history_barplot(df)
@@ -44,10 +43,12 @@ def home_page_layout():
         dbc.Row([
             dbc.Col(graph_2),
             dbc.Col([
-                kpi0.display(), 
+                kpi0.display(),
+                html.Br(),
                 kpi1.display(), 
+                html.Br(),
                 kpi2.display()
-            ], md=4)
+            ], class_name="mb-4")   
         ])
     ], 
     style={'width': '100%', 'padding': '20px'})

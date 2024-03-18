@@ -42,7 +42,6 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
         color = 'cyan'
     elif(side == 'Sell'):
         y_array = plot_df['ST_Superior']
-        print(y_array)
         color = 'magenta'
     else:
         y_array = [0] * len(plot_df['Time'])
@@ -50,6 +49,12 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
         
     arr_entry = [entry] * len(plot_df['Time'])
     arr_stoploss = [stoploss] * len(plot_df['Time'])
+    if (entry - stoploss) <= 0.1:
+        mode_plot_st = 'markers'
+        mode_plot_entry = 'lines'
+    else:
+        mode_plot = 'lines'
+        mode_plot_entry = 'lines'
     if(entry != 0 and stoploss != 0):
         fig = go.Figure(data=[go.Candlestick(x=plot_df['Time'],
                                             open=plot_df['Open'],
@@ -60,8 +65,8 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                                             name=symbol,
                                             increasing_line_color= 'cyan', 
                                             decreasing_line_color= 'mediumorchid'),
-                            go.Scatter(x=plot_df['Time'], y=arr_entry, mode='lines', name='Entry-Profit', line={'color': 'green'}),
-                            go.Scatter(x=plot_df['Time'], y=arr_stoploss, mode='lines', name='Stoploss', line={'color': 'red'}),
+                            go.Scatter(x=plot_df['Time'], y=arr_entry, mode=mode_plot_st, name='Entry-Profit', line={'color': 'green'}),
+                            go.Scatter(x=plot_df['Time'], y=arr_stoploss, mode=mode_plot_entry, name='Stoploss', line={'color': 'red'}),
                             go.Scatter(x=plot_df['Time'], y=y_array, mode='lines', name='Supertrend', line={'color': color})])
         fig.update_layout(xaxis_rangeslider_visible=True,
                     showlegend=False,
@@ -117,12 +122,26 @@ def create_history_barplot(plot_df: pd.DataFrame, type: str='Profit'):
     )
 
     layout = go.Layout(
-        title='Historial de Ordenes ',
-        xaxis=dict(title='Dia'),
-        yaxis=dict(title='Valor')
+        title='Historial de Ordenes '
     )
 
     fig = go.Figure(data=[bar_trace], layout=layout)
+    fig.update_layout(
+                    xaxis_rangeslider_visible=True,
+                    showlegend=False,
+                    plot_bgcolor='black',
+                    xaxis=dict(
+                        showgrid=False, 
+                        zeroline=False, 
+                        tickfont=dict(color='white'),
+                        ),
+                    yaxis=dict(
+                        showgrid=False, 
+                        zeroline=False, 
+                        tickfont=dict(color='white'), 
+                        ),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    margin=dict(l=20, r=20, b=20, t=35) )
 
     return fig
 
@@ -140,8 +159,23 @@ def create_kpi_piechart(positive_prop: float, negative_prop: float):
     layout = go.Layout(
         title='Profit vs Loss'
     )
-
     # Create figure
     fig = go.Figure(data=[pie_trace], layout=layout)
+    fig.update_layout(
+                    xaxis_rangeslider_visible=True,
+                    showlegend=False,
+                    plot_bgcolor='black',
+                    xaxis=dict(
+                        showgrid=False, 
+                        zeroline=False, 
+                        tickfont=dict(color='white'),
+                        ),
+                    yaxis=dict(
+                        showgrid=False, 
+                        zeroline=False, 
+                        tickfont=dict(color='white'), 
+                        ),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    margin=dict(l=20, r=20, b=20, t=35) )
     
     return fig

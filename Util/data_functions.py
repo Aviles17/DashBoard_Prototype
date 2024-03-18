@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 import pandas_ta as ta 
 import pytz
+import numpy as np
 from pybit.unified_trading import HTTP
 import Credenciales as id
 
@@ -83,55 +84,79 @@ def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
 ###################################################################################
 '''
 def CalculateSupertrend(data: pd.DataFrame):
+  reversed_df = data.iloc[::-1]
   Temp_Trend = ta.supertrend(
-    high= data['High'], 
-    low = data['Low'], 
-    close = data['Close'], 
+    high= reversed_df['High'], 
+    low = reversed_df['Low'], 
+    close = reversed_df['Close'], 
     period=10, 
     multiplier=3)
+  # Calcular DEMA800
+  ema1 = ema(reversed_df['Close'], length=800)
+  ema2 = ema(ema1, length=800)
+  Temp_Trend['DEMA800'] = 2 * ema2 - ema1 
   Temp_Trend = Temp_Trend.rename(columns={'SUPERT_7_3.0':'Supertrend','SUPERTd_7_3.0':'Polaridad','SUPERTl_7_3.0':'ST_Inferior','SUPERTs_7_3.0':'ST_Superior'})
   df_merge = pd.merge(data,Temp_Trend,left_index=True, right_index=True)
-  df_merge['DEMA800'] = ta.dema(df_merge['Close'], length=800)
+  df_merge.to_csv('Data.csv')
   return df_merge
+
+
+'''
+###################################################################################
+[Proposito]: Funcion auxiliar para calcular el Exponential Moving Average (EMA) de una serie Pandas
+[Parametros]: source (pandas.Series que representa el precio de cierre o con lo que se calculara el EMA), 
+              length (La ventana de tiempo del EMA a calcular), 
+[Retorno]: Retorna serie de pandas con el EMA calculado
+###################################################################################
+'''
+def ema(source, length):     
+
+  #Calcular factor de suavisado (alpha)
+  alpha = 2 / (length + 1)
+  #Inicializar el EMA con el primer valor de la fuente
+  ema = source.iloc[0]      
+  #Calcular EMA para cada valor en la fuente
+  ema_values = []    
+  for i,value in enumerate(source):         
+    ema = alpha * value + (1 - alpha) * ema         
+    ema_values.append(ema)
+  ema_values = ema_values
+  # Convertir lista a serie de pandas 
+  ema_series = pd.Series(ema_values)          
+  return ema_series
 
 
 def get_clean_data(df: pd.DataFrame):
     #Limpiar el dataframe
     if df['DEMA800'].isnull().values.any():
         df.dropna(subset=['DEMA800'], inplace=True)
-    #Convertir el tiempo en formato estandar
-    df['Time'] = pd.to_datetime(df['Time'])
-    start_point = len(df) - 200
-    df1 = df.iloc[start_point:]
-    return df1
+    return df.head(200)
 
 def get_order_info(symb: str):
   try:
     positions = client.get_positions(category='linear',symbol= symb)
     data = positions["result"]["list"]
     for item in data:
-        if item["size"] != 0:
-            return item
+        if item["size"] != '0':
+          return item
   except Exception as e:
     print(f"An exception occurred connecting to Bybit 'get_positions' endpoint: {e}")
-  
-  finally:
-    #En el llegado caso de que no retorne nada, se retorna un diccionario vacio
-    return {}
+  return {}
+    
 
 def get_position(side: str, symbol: str, df: pd.DataFrame):
     symbol_res = get_order_info(symbol)
     if len(symbol_res) != 0:
         position = None
         if side == symbol_res["side"] and symbol_res["size"] != 0:
-            size =  symbol_res["size"]
-            entry =  symbol_res["avgPrice"]
-            stoploss = symbol_res["stopLoss"]
+            size =  float(symbol_res["size"])
+            entry =  float(symbol_res["avgPrice"])
+            stoploss = float(symbol_res["stopLoss"])
             if(side == 'Sell'):
                 pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*-100
             else:
                 pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*100
-            return size, entry, stoploss, pyl
+            return size, str(entry), str(stoploss), pyl
         else:
             return 0, 0, 0, 0
     else:
