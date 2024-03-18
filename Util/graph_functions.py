@@ -1,5 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.express as px
 
 def create_supertrend_graph(plot_df: pd.DataFrame, symbol: str):
     fig = go.Figure(data=[go.Candlestick(x=plot_df['Time'],
@@ -113,35 +114,37 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                     margin=dict(l=20, r=20, b=20, t=35) )
         return fig
 
-def create_history_barplot(plot_df: pd.DataFrame, type: str='Profit'):
-    bar_trace = go.Bar(
-        x=plot_df['Time'],
-        y=plot_df[type],
-        marker=dict(color=['green' if val >= 0 else 'red' for val in plot_df[type]]),  # Color positive values blue and negative values red
-        name='Value'
-    )
+def create_history_barplot(plot_df: pd.DataFrame, type_l: str="Profit"):
+    # Crear el gráfico de barras con Plotly Express
+    fig = px.bar(plot_df, x="Time", y=type_l, title="Historial de Órdenes",
+                color_discrete_map={'positive': 'green', 'negative': 'red'},
+                labels={"Time": "Tiempo", type_l: "Valor"},)
 
-    layout = go.Layout(
-        title='Historial de Ordenes '
-    )
-
-    fig = go.Figure(data=[bar_trace], layout=layout)
+    # Personalizar diseño del gráfico
     fig.update_layout(
-                    xaxis_rangeslider_visible=True,
-                    showlegend=False,
-                    plot_bgcolor='black',
-                    xaxis=dict(
-                        showgrid=False, 
-                        zeroline=False, 
-                        tickfont=dict(color='white'),
-                        ),
-                    yaxis=dict(
-                        showgrid=False, 
-                        zeroline=False, 
-                        tickfont=dict(color='white'), 
-                        ),
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    margin=dict(l=20, r=20, b=20, t=35) )
+        xaxis_rangeslider_visible=True,
+        plot_bgcolor='black',
+        xaxis_title='', 
+        yaxis_title='', 
+        xaxis=dict(
+            showgrid=False,
+            zeroline=False,
+            tickfont=dict(color='white'),
+            dtick=len(plot_df) // 10  # Mostrar una etiqueta cada 10 puntos de datos
+        ),
+        yaxis=dict(
+            showgrid=False,
+            zeroline=False,
+            tickfont=dict(color='white')
+        ),
+        paper_bgcolor='rgba(0,0,0,0)',
+        margin=dict(l=20, r=20, b=20, t=35)
+    )
+
+    # Asignar colores basados en el valor positivo/negativo
+    fig.data[0].marker.color = [
+        'green' if val >= 0 else 'red' for val in plot_df[type_l]
+    ]
 
     return fig
 

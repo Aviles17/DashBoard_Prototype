@@ -6,3 +6,7 @@ Credenciales.py
 /assets
 #Ignore Virtual Environment
 Dashenv/
+#Ignore all the logs
+*.log
+#Ignore all the data
+*.csv

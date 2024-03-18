@@ -97,7 +97,6 @@ def CalculateSupertrend(data: pd.DataFrame):
   Temp_Trend['DEMA800'] = 2 * ema2 - ema1 
   Temp_Trend = Temp_Trend.rename(columns={'SUPERT_7_3.0':'Supertrend','SUPERTd_7_3.0':'Polaridad','SUPERTl_7_3.0':'ST_Inferior','SUPERTs_7_3.0':'ST_Superior'})
   df_merge = pd.merge(data,Temp_Trend,left_index=True, right_index=True)
-  df_merge.to_csv('Data.csv')
   return df_merge
 
 
@@ -188,9 +187,14 @@ def get_history():
       register_list.append(register["createdTime"])
       register_list.append(float(register["closedPnl"]))
       if register["side"] == "Buy":
-        pyl = (((float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))/float(register["avgEntryPrice"]))*100)*100
+        quote_currency = (float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))*float(register["closedSize"])*float(register["leverage"])
+        notional = float(register["avgEntryPrice"])*float(register["closedSize"])*float(register["leverage"])
+        pyl = (quote_currency/notional)*-100
       else:
-        pyl = (((float(register["avgEntryPrice"]) - float(register["avgExitPrice"]))/float(register["avgEntryPrice"]))*100)*-100
+        quote_currency = (float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))*float(register["closedSize"])*float(register["leverage"])
+        notional = float(register["avgEntryPrice"])*float(register["closedSize"])*float(register["leverage"])
+        pyl = (quote_currency/notional)*100
+        
       register_list.append(pyl)
       proto_dataframe.append(register_list)
       
@@ -198,7 +202,8 @@ def get_history():
     df = df.sort_values(by='Time')
     df['P&L'] *= 100
     df['Time'] = pd.to_datetime(pd.to_numeric(df['Time']), unit='ms')
-    df['Time'] = df['Time'].dt.strftime('%d/%H:%S')
-    return df, df['Profit'].sum(), df['P&L'].mean(), df[df['Profit'] > 0]['Profit'].sum(), df[df['Profit'] < 0]['Profit'].sum()
+    df['Time'] = df['Time'].dt.strftime('%m/%d/%H:%S')
+    df.to_csv('History.csv')
+    return df, df['Profit'].sum(), df['P&L'].sum(), df[df['Profit'] > 0]['Profit'].sum(), df[df['Profit'] < 0]['Profit'].sum()
       
         
