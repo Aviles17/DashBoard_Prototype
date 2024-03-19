@@ -151,10 +151,15 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
             size =  float(symbol_res["size"])
             entry =  float(symbol_res["avgPrice"])
             stoploss = float(symbol_res["stopLoss"])
+            leverage = float(symbol_res["leverage"])
             if(side == 'Sell'):
-                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*-100
+                quote_currency = (df['Close'].iloc[-1] - entry)*size*leverage
+                notial = entry*size*leverage
+                pyl = (quote_currency/notial)*-100
             else:
-                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*100
+                quote_currency = (df['Close'].iloc[-1] - entry)*size*leverage
+                notial = entry*size*leverage
+                pyl = (quote_currency/notial)*100
             return size, str(entry), str(stoploss), pyl
         else:
             return 0, 0, 0, 0
@@ -203,7 +208,22 @@ def get_history():
     df['P&L'] *= 100
     df['Time'] = pd.to_datetime(pd.to_numeric(df['Time']), unit='ms')
     df['Time'] = df['Time'].dt.strftime('%m/%d/%H:%S')
+    prop_positives, prop_negatives, prop_count_positives, prop_count_negatives = sum_and_count_positives_negatives(df, 'Profit')
     df.to_csv('History.csv')
-    return df, df['Profit'].sum(), df['P&L'].sum(), df[df['Profit'] > 0]['Profit'].sum(), df[df['Profit'] < 0]['Profit'].sum()
+    return df, df['Profit'].sum(), df['P&L'].mean(), prop_positives, prop_negatives, prop_count_positives, prop_count_negatives
       
-        
+
+def sum_and_count_positives_negatives(df: pd.DataFrame, column_name: str):
+  # Filtrar los valores positivos y negativos
+  positives = df[df[column_name] > 0][column_name]
+  negatives = df[df[column_name] < 0][column_name]
+  
+  sum_positives = positives.sum()
+  sum_negatives = negatives.sum()
+  count_positives = positives.count()
+  count_negatives = negatives.count()
+  prop_positives = sum_positives / (sum_positives + abs(sum_negatives))
+  prop_negatives = abs(sum_negatives) / (sum_positives + abs(sum_negatives))
+  prop_count_positives = count_positives / (count_positives + count_negatives)
+  prop_count_negatives = count_negatives / (count_positives + count_negatives)
+  return prop_positives, prop_negatives, prop_count_positives, prop_count_negatives

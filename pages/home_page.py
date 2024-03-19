@@ -8,7 +8,7 @@ def home_page_layout():
     
     global df
     
-    df, profit, trend, positive_prop, negative_prop = get_history()
+    df, profit, trend, prop_positives, prop_negatives, prop_count_positives, prop_count_negatives = get_history()
     
     kpi0 = kpi("Balance Total", str(Get_Balance("USDT")),0)
     kpi1 = kpi("Tendencia",str(trend),1)
@@ -20,8 +20,14 @@ def home_page_layout():
     
     graph_2 = dcc.Graph(
         id="graph_2",
-        figure = gf.create_kpi_piechart((positive_prop/abs(profit)), (abs(negative_prop)/abs(profit)))
+        figure = gf.create_kpi_piechart(prop_positives, prop_negatives, "Profit vs Losses")
     )
+    
+    graph_3 = dcc.Graph(
+        id="graph_3",
+        figure = gf.create_kpi_piechart(prop_count_positives, prop_count_negatives, "Count of Profit vs Conut Losses")
+    )
+    
     user_input = dcc.Dropdown(
         id='user-input',
         options=[
@@ -39,20 +45,17 @@ def home_page_layout():
         dbc.Row([
             dbc.Col(graph_1),
         ], id='graph_1-container', className="mb-4"), 
-        
         dbc.Row([
             dbc.Col(graph_2),
-            dbc.Col([
-                kpi0.display(),
-                html.Br(),
-                kpi1.display(), 
-                html.Br(),
-                kpi2.display()
+            dbc.Col(graph_3)
+        ], id='graph_2-container', className="mb-4"),
+            
+        dbc.Row([
+                dbc.Col(kpi0.display()),
+                dbc.Col(kpi1.display()), 
+                dbc.Col(kpi2.display())
             ], class_name="mb-4")   
-        ])
-    ], 
-    style={'width': '100%', 'padding': '20px'})
-    
+        ], style={'width': '100%', 'padding': '20px'})
     return layout
 
 @callback(

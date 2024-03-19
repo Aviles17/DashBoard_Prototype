@@ -149,8 +149,8 @@ def create_history_barplot(plot_df: pd.DataFrame, type_l: str="Profit"):
     return fig
 
 
-def create_kpi_piechart(positive_prop: float, negative_prop: float):
-    
+def create_kpi_piechart(positive_prop: float, negative_prop: float, titulo: str = "Default"):
+    print(positive_prop, negative_prop)
     pie_trace = go.Pie(
         labels=['Profit', 'Loss'],
         values=[positive_prop, negative_prop],
@@ -160,7 +160,7 @@ def create_kpi_piechart(positive_prop: float, negative_prop: float):
     )
 
     layout = go.Layout(
-        title='Profit vs Loss'
+        title= titulo
     )
     # Create figure
     fig = go.Figure(data=[pie_trace], layout=layout)

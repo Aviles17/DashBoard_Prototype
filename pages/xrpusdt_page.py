@@ -91,7 +91,6 @@ def xrpusdt_page_layout():
 def update_content(user_input):
     if user_input == 'Long':
         size, entry, stoploss, pyl = dt.get_position("Buy",'XRPUSDT',df)
-        print(size, entry, stoploss, pyl)
         figure_3 = gf.create_order_graph(df,float(entry),float(stoploss),'XRPUSDT','Buy')
         graph_3 = {
             'data': figure_3.data,
@@ -105,7 +104,6 @@ def update_content(user_input):
         
     elif user_input == 'Short':
         size, entry, stoploss, pyl = dt.get_position("Sell",'XRPUSDT',df)
-        print(size, entry, stoploss, pyl)
         figure_3 = gf.create_order_graph(df,float(entry),float(stoploss),'XRPUSDT','Sell')
         graph_3 = {
             'data': figure_3.data,
@@ -133,7 +131,6 @@ def update_content(user_input):
 def update_graph1(n_intervals):
 
     # Obtenemos los datos actualizados para graph1
-    print('Update XRP')
     df = dt.get_data('XRPUSDT','15')
     df = dt.CalculateSupertrend(df)
     df = dt.get_clean_data(df)
