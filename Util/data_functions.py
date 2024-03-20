@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 import pandas_ta as ta 
 import pytz
+import numpy as np
 from pybit.unified_trading import HTTP
 import Credenciales as id
 
@@ -38,7 +39,6 @@ def Get_Balance(symbol: str):
 ###################################################################################
 '''
 def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
-
   list_registers = []
   DATA_200 = 180000
   now = datetime.now()
@@ -52,8 +52,10 @@ def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
         data = requests.get(url).json()
         break
       except requests.exceptions.ConnectionError as e:
+        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
         time.sleep(10)
       except requests.RequestException as e:
+        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
         time.sleep(10)
     df = pd.DataFrame(data['result']["list"], columns=['Time','Open','High','Low','Close','Volume', 'Turnover'])
     df['Time'] = pd.to_numeric(df['Time'])
@@ -82,50 +84,146 @@ def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
 ###################################################################################
 '''
 def CalculateSupertrend(data: pd.DataFrame):
+  reversed_df = data.iloc[::-1]
   Temp_Trend = ta.supertrend(
-    high= data['High'], 
-    low = data['Low'], 
-    close = data['Close'], 
+    high= reversed_df['High'], 
+    low = reversed_df['Low'], 
+    close = reversed_df['Close'], 
     period=10, 
     multiplier=3)
+  # Calcular DEMA800
+  ema1 = ema(reversed_df['Close'], length=800)
+  ema2 = ema(ema1, length=800)
+  Temp_Trend['DEMA800'] = 2 * ema2 - ema1 
   Temp_Trend = Temp_Trend.rename(columns={'SUPERT_7_3.0':'Supertrend','SUPERTd_7_3.0':'Polaridad','SUPERTl_7_3.0':'ST_Inferior','SUPERTs_7_3.0':'ST_Superior'})
   df_merge = pd.merge(data,Temp_Trend,left_index=True, right_index=True)
-  df_merge['DEMA800'] = ta.dema(df_merge['Close'], length=800)
   return df_merge
+
+
+'''
+###################################################################################
+[Proposito]: Funcion auxiliar para calcular el Exponential Moving Average (EMA) de una serie Pandas
+[Parametros]: source (pandas.Series que representa el precio de cierre o con lo que se calculara el EMA), 
+              length (La ventana de tiempo del EMA a calcular), 
+[Retorno]: Retorna serie de pandas con el EMA calculado
+###################################################################################
+'''
+def ema(source, length):     
+
+  #Calcular factor de suavisado (alpha)
+  alpha = 2 / (length + 1)
+  #Inicializar el EMA con el primer valor de la fuente
+  ema = source.iloc[0]      
+  #Calcular EMA para cada valor en la fuente
+  ema_values = []    
+  for i,value in enumerate(source):         
+    ema = alpha * value + (1 - alpha) * ema         
+    ema_values.append(ema)
+  ema_values = ema_values
+  # Convertir lista a serie de pandas 
+  ema_series = pd.Series(ema_values)          
+  return ema_series
 
 
 def get_clean_data(df: pd.DataFrame):
     #Limpiar el dataframe
     if df['DEMA800'].isnull().values.any():
         df.dropna(subset=['DEMA800'], inplace=True)
-    #Convertir el tiempo en formato estandar
-    df['Time'] = pd.to_datetime(df['Time'])
-    start_point = len(df) - 200
-    df1 = df.iloc[start_point:]
-    return df1
+    return df.head(200)
 
 def get_order_info(symb: str):
+  try:
     positions = client.get_positions(category='linear',symbol= symb)
     data = positions["result"]["list"]
     for item in data:
-        if item["size"] != 0:
-            return item
-    return {}
+        if item["size"] != '0':
+          return item
+  except Exception as e:
+    print(f"An exception occurred connecting to Bybit 'get_positions' endpoint: {e}")
+  return {}
+    
 
 def get_position(side: str, symbol: str, df: pd.DataFrame):
     symbol_res = get_order_info(symbol)
     if len(symbol_res) != 0:
         position = None
         if side == symbol_res["side"] and symbol_res["size"] != 0:
-            size =  symbol_res["size"]
-            entry =  symbol_res["avgPrice"]
-            stoploss = symbol_res["stopLoss"]
+            size =  float(symbol_res["size"])
+            entry =  float(symbol_res["avgPrice"])
+            stoploss = float(symbol_res["stopLoss"])
+            leverage = float(symbol_res["leverage"])
             if(side == 'Sell'):
-                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*-100
+                quote_currency = (df['Close'].iloc[-1] - entry)*size*leverage
+                notial = entry*size*leverage
+                pyl = (quote_currency/notial)*-100
             else:
-                pyl = (((df['Close'].iloc[-2] - entry)/entry)*100)*100
-            return size, entry, stoploss, pyl
+                quote_currency = (df['Close'].iloc[-1] - entry)*size*leverage
+                notial = entry*size*leverage
+                pyl = (quote_currency/notial)*100
+            return size, str(entry), str(stoploss), pyl
         else:
             return 0, 0, 0, 0
     else:
         return 0, 0, 0, 0
+  
+def get_position_history():
+  endtime = int(datetime.now().timestamp() * 1000)
+  avg_seven = 604800 * 1000
+  concat_list = []
+  try:
+      for i in range(5):
+        res = client.get_closed_pnl(category="linear", endTime = endtime, limit=100)
+        endtime -= avg_seven
+        concat_list.extend(res["result"]["list"])
+
+      unique_list = [dict(t) for t in {tuple(sorted(d.items())) for d in concat_list}]
+      return unique_list
+  except Exception as e:
+      print(f"An exception occurred connecting to Bybit 'get_closed_pnl' endpoint: {e}")
+      return []
+      
+      
+def get_history():
+  history = get_position_history()
+  if len(history) != 0:
+    proto_dataframe = []
+    for register in history:
+      register_list = []
+      register_list.append(register["createdTime"])
+      register_list.append(float(register["closedPnl"]))
+      if register["side"] == "Buy":
+        quote_currency = (float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))*float(register["closedSize"])*float(register["leverage"])
+        notional = float(register["avgEntryPrice"])*float(register["closedSize"])*float(register["leverage"])
+        pyl = (quote_currency/notional)*-100
+      else:
+        quote_currency = (float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))*float(register["closedSize"])*float(register["leverage"])
+        notional = float(register["avgEntryPrice"])*float(register["closedSize"])*float(register["leverage"])
+        pyl = (quote_currency/notional)*100
+        
+      register_list.append(pyl)
+      proto_dataframe.append(register_list)
+      
+    df = pd.DataFrame(proto_dataframe, columns=['Time','Profit','P&L'])
+    df = df.sort_values(by='Time')
+    df['P&L'] *= 100
+    df['Time'] = pd.to_datetime(pd.to_numeric(df['Time']), unit='ms')
+    df['Time'] = df['Time'].dt.strftime('%m/%d/%H:%S')
+    prop_positives, prop_negatives, prop_count_positives, prop_count_negatives = sum_and_count_positives_negatives(df, 'Profit')
+    df.to_csv('History.csv')
+    return df, df['Profit'].sum(), df['P&L'].mean(), prop_positives, prop_negatives, prop_count_positives, prop_count_negatives
+      
+
+def sum_and_count_positives_negatives(df: pd.DataFrame, column_name: str):
+  # Filtrar los valores positivos y negativos
+  positives = df[df[column_name] > 0][column_name]
+  negatives = df[df[column_name] < 0][column_name]
+  
+  sum_positives = positives.sum()
+  sum_negatives = negatives.sum()
+  count_positives = positives.count()
+  count_negatives = negatives.count()
+  prop_positives = sum_positives / (sum_positives + abs(sum_negatives))
+  prop_negatives = abs(sum_negatives) / (sum_positives + abs(sum_negatives))
+  prop_count_positives = count_positives / (count_positives + count_negatives)
+  prop_count_negatives = count_negatives / (count_positives + count_negatives)
+  return prop_positives, prop_negatives, prop_count_positives, prop_count_negatives

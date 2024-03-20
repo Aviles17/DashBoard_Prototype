@@ -131,7 +131,6 @@ def update_content(user_input):
 def update_graph1(n_intervals):
 
     # Obtenemos los datos actualizados para graph1
-    print('Update XRP')
     df = dt.get_data('XRPUSDT','15')
     df = dt.CalculateSupertrend(df)
     df = dt.get_clean_data(df)
