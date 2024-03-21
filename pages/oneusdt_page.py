@@ -6,17 +6,17 @@ from components.kpi import kpi
 import Util.data_functions as dt
 import Util.graph_functions as gf
 
-def ethusdt_page_layout():
-    # Define the layout for ETH/USDT page
+def oneusdt_page_layout():
+    # Define the layout for ONE/USDT page
     global df
-    df = dt.get_data('ETHUSDT','15')
+    df = dt.get_data('ONEUSDT','15')
     df = dt.CalculateSupertrend(df)
     df = dt.get_clean_data(df)
     
     # Create two empty Divs for the graphs, you can insert your Plotly graphs here
     graph1 = dcc.Graph(
         id='graph1',
-        figure=gf.create_supertrend_graph(df,'ETHUSDT')
+        figure=gf.create_supertrend_graph(df,'ONEUSDT')
     )
     # Create a dropdown for user input
     user_input = dcc.Dropdown(
@@ -33,7 +33,7 @@ def ethusdt_page_layout():
     
     graph_2 = dcc.Graph(
         id="graph_2",
-        figure = gf.create_order_graph(df,0,0,'ETHUSDT', None)
+        figure = gf.create_order_graph(df,0,0,'ONEUSDT', None)
     )
     
     kpi1 = kpi("KPI 1", "Value 1",1)
@@ -41,8 +41,8 @@ def ethusdt_page_layout():
     kpi3 = kpi("KPI 3", "Value 3",3)
     kpi4 = kpi("KPI 4", "Value 4",4)
     
-    title2 = html.H3("ETH/USDT Positions")
-    title1 = html.H3("ETH/USDT Live Chart")
+    title2 = html.H3("ONE/USDT Positions")
+    title1 = html.H3("ONE/USDT Live Chart")
         
     # Define the overall layout of the page
     layout = dbc.Container([
@@ -93,8 +93,8 @@ def ethusdt_page_layout():
 )
 def update_content(user_input):
     if user_input == 'Long':
-        size, entry, stoploss, pyl = dt.get_position("Buy",'ETHUSDT',df)
-        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),'ETHUSDT', 'Buy')
+        size, entry, stoploss, pyl = dt.get_position("Buy",'ONEUSDT',df)
+        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),'ONEUSDT', 'Buy')
         graph_2 = {
             'data': figure_2.data,
             'layout': figure_2.layout
@@ -106,8 +106,8 @@ def update_content(user_input):
         return graph_2, kpi1.display(), kpi2.display(), kpi3.display(), kpi4.display()
         
     elif user_input == 'Short':
-        size, entry, stoploss, pyl = dt.get_position("Sell",'ETHUSDT',df)
-        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),'ETHUSDT', 'Sell')
+        size, entry, stoploss, pyl = dt.get_position("Sell",'ONEUSDT',df)
+        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),'ONEUSDT', 'Sell')
         graph_2 = {
             'data': figure_2.data,
             'layout': figure_2.layout
@@ -135,12 +135,12 @@ def update_content(user_input):
 def update_graph1(n_intervals):
 
     # Obtenemos los datos actualizados para graph1
-    df = dt.get_data('ETHUSDT','15')
+    df = dt.get_data('ONEUSDT','15')
     df = dt.CalculateSupertrend(df)
     df = dt.get_clean_data(df)
 
     # Creamos y devolvemos la figura actualizada para graph1
-    graph1 = gf.create_supertrend_graph(df, 'ETHUSDT')
+    graph1 = gf.create_supertrend_graph(df, 'ONEUSDT')
 
     return graph1
 
