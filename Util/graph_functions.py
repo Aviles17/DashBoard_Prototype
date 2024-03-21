@@ -114,7 +114,7 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
                     margin=dict(l=20, r=20, b=20, t=35) )
         return fig
 
-def create_history_barplot(plot_df: pd.DataFrame, type_l: str="Profit"):
+def create_history_barplot(plot_df: pd.DataFrame, type_l: str="P&L"):
     # Crear el gráfico de barras con Plotly Express
     fig = px.bar(plot_df, x="Time", y=type_l, title="Historial de Órdenes",
                 color_discrete_map={'positive': 'green', 'negative': 'red'},
@@ -150,7 +150,6 @@ def create_history_barplot(plot_df: pd.DataFrame, type_l: str="Profit"):
 
 
 def create_kpi_piechart(positive_prop: float, negative_prop: float, titulo: str = "Default"):
-    print(positive_prop, negative_prop)
     pie_trace = go.Pie(
         labels=['Profit', 'Loss'],
         values=[positive_prop, negative_prop],

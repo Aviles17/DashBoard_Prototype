@@ -4,9 +4,9 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 
 
-from pages import ethusdt_page, xrpusdt_page, home_page
+from pages import oneusdt_page, xrpusdt_page, home_page
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG],suppress_callback_exceptions=False)
+app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG],suppress_callback_exceptions=True)
 
 # Sidebar style
 SIDEBAR_STYLE = {
@@ -38,7 +38,7 @@ ACT_Img = html.Div(
 navbar = dbc.Nav(
     [
         dbc.NavItem(dbc.NavLink("Home", href="/", active="exact")),
-        dbc.NavItem(dbc.NavLink("ETH/USDT", href="/ethusdt", active="exact")),
+        dbc.NavItem(dbc.NavLink("ONE/USDT", href="/oneusdt", active="exact")),
         dbc.NavItem(dbc.NavLink("XRP/USDT", href="/xrpusdt", active="exact")),
         # Add more navigation links as needed
     ],
@@ -63,8 +63,8 @@ sidebar = html.Div(
 def display_page(pathname):
     if pathname == "/":
         return home_page.home_page_layout()
-    elif pathname == "/ethusdt":
-        return ethusdt_page.ethusdt_page_layout()
+    elif pathname == "/oneusdt":
+        return oneusdt_page.oneusdt_page_layout()
     elif pathname == "/xrpusdt":
         return xrpusdt_page.xrpusdt_page_layout()
     else:
@@ -82,4 +82,4 @@ app.layout = html.Div([
 ])
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)

@@ -167,6 +167,7 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
         return 0, 0, 0, 0
   
 def get_position_history():
+  start_test_unix = 1710172106699 + 764000000 # 2024-03-21 10:00:30
   endtime = int(datetime.now().timestamp() * 1000)
   avg_seven = 604800 * 1000
   concat_list = []
@@ -177,7 +178,13 @@ def get_position_history():
         concat_list.extend(res["result"]["list"])
 
       unique_list = [dict(t) for t in {tuple(sorted(d.items())) for d in concat_list}]
-      return unique_list
+      filtered_list = []
+      for item in unique_list:
+        if int(item["createdTime"]) >= start_test_unix:
+          filtered_list.append(item)
+          
+      return filtered_list
+      
   except Exception as e:
       print(f"An exception occurred connecting to Bybit 'get_closed_pnl' endpoint: {e}")
       return []
