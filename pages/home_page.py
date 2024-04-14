@@ -10,7 +10,7 @@ def home_page_layout():
     
     df, profit, trend, prop_positives, prop_negatives, prop_count_positives, prop_count_negatives = get_history()
     
-    kpi0 = kpi("Balance Total", str(Get_Balance("USDT")),0)
+    kpi0 = kpi("Balance Total", str(Get_Balance("USDT")),0)# #
     kpi1 = kpi("Tendencia",str(trend),1)
     kpi2 = kpi("Total Profit ",str(profit),2)
     graph_1 = dcc.Graph(
