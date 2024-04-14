@@ -10,3 +10,5 @@ Dashenv/
 *.log
 #Ignore all the data
 *.csv
+#Ignore enviroment variables
+.env
