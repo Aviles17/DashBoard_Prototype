@@ -6,11 +6,14 @@ import pandas_ta as ta
 import pytz
 import numpy as np
 from pybit.unified_trading import HTTP
-import Credenciales as id
+from dotenv import load_dotenv
+import os
 
-global client
-client = HTTP(testnet=False, api_key=id.Api_Key, api_secret=id.Api_Secret)
-
+global client, api_key, api_secret
+load_dotenv()
+api_key = os.getenv("API_KEY")
+api_secret = os.getenv("API_SECRET")
+client = HTTP(testnet=False, api_key=api_key, api_secret=api_secret)
 '''
 ###################################################################################
 [Proposito]: Funcion para limpiar la entrada de la informacion del cliente y proveer la informacion de cuenta
