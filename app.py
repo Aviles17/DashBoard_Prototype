@@ -7,6 +7,7 @@ from dash.dependencies import Input, Output
 from pages import oneusdt_page, xrpusdt_page, home_page
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG],suppress_callback_exceptions=True)
+server = app.server
 
 # Sidebar style
 SIDEBAR_STYLE = {
