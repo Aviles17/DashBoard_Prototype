@@ -1,12 +1,11 @@
 import dash
 import dash_bootstrap_components as dbc
-from dash import dcc, html
+from dash import dcc, html, Dash
 from dash.dependencies import Input, Output
-
-
 from pages import oneusdt_page, xrpusdt_page, home_page
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG],suppress_callback_exceptions=True)
+server = app.server
 
 # Sidebar style
 SIDEBAR_STYLE = {
@@ -82,4 +81,4 @@ app.layout = html.Div([
 ])
 
 if __name__ == "__main__":
-    app.run_server(debug=True)
+    app.run_server(debug=False)
