@@ -1,24 +1,33 @@
 from dash import html, dcc, callback
 import dash_bootstrap_components as dbc
-from dash.dependencies import Input, Output
-from dash.exceptions import PreventUpdate
+from dash.dependencies import Input, Output, State
 from components.kpi import kpi
 import Util.data_functions as dt
 import Util.graph_functions as gf
 
-def oneusdt_page_layout():
-    # Define the layout for ONE/USDT page
+def general_coin_page_layout(coin:str):
     global df
-    df = dt.get_data('ONEUSDT','15')
+    global working_coin
+
+    #Initialize variables for later usage
+    working_coin = coin.upper()
+    df = dt.get_data(working_coin,'15')
     df = dt.CalculateSupertrend(df)
     df = dt.get_clean_data(df)
-    
-    # Create two empty Divs for the graphs, you can insert your Plotly graphs here
-    graph1 = dcc.Graph(
-        id='graph1',
-        figure=gf.create_supertrend_graph(df,'ONEUSDT')
+
+    #Graph 1 -> Live Chart
+    graph_1 = dcc.Graph(
+        id='graph_1',
+        figure=gf.create_supertrend_graph(df,working_coin)
     )
-    # Create a dropdown for user input
+
+    #Graph 2 -> Position Chart
+    graph_2 = dcc.Graph(
+        id="graph_2",
+        figure = gf.create_order_graph(df,0,0,'XRPUSDT', None)
+    )
+
+    # Create a dropdown for user input -> Type of order in order graph
     user_input = dcc.Dropdown(
         id='user-input',
         options=[
@@ -27,27 +36,21 @@ def oneusdt_page_layout():
         ],
         style={"color":"black"}
     )
-    
-    global graph_2 
-    global kpi1, kpi2, kpi3, kpi4
-    
-    graph_2 = dcc.Graph(
-        id="graph_2",
-        figure = gf.create_order_graph(df,0,0,'ONEUSDT', None)
-    )
-    
+
+    #Define KPI graphic object with class
     kpi1 = kpi("KPI 1", "Value 1",1)
     kpi2 = kpi("KPI 2", "Value 2",2)
     kpi3 = kpi("KPI 3", "Value 3",3)
     kpi4 = kpi("KPI 4", "Value 4",4)
+
+    #Define titles
+    title2 = html.H3(f"{working_coin} Positions")
+    title1 = html.H3(f"{working_coin} Live Chart")
     
-    title2 = html.H3("ONE/USDT Positions")
-    title1 = html.H3("ONE/USDT Live Chart")
-        
     # Define the overall layout of the page
     layout = dbc.Container([
         dcc.Interval(
-        id='graph1-update-interval',
+        id='graph_1_update_interval',
         interval=60*1000,  # Update every 5 minutes (in milliseconds)
         n_intervals=0,
         ),
@@ -56,7 +59,7 @@ def oneusdt_page_layout():
         ], className="mb-4"),
         
         dbc.Row([
-            dbc.Col(graph1),  # Place static graph_1 in a single column
+            dbc.Col(graph_1),  # Place static graph_1 in a single column
         ], className="mb-4"),
         
         dbc.Row([
@@ -80,7 +83,7 @@ def oneusdt_page_layout():
     ], style={'width': '100%', 'padding': '20px'})
     
     return layout
-    
+
 # Define a callback to show/hide graph_2 and KPIs based on user input
 @callback(
     [Output('graph_2', 'figure'),
@@ -93,8 +96,8 @@ def oneusdt_page_layout():
 )
 def update_content(user_input):
     if user_input == 'Long':
-        size, entry, stoploss, pyl = dt.get_position("Buy",'ONEUSDT',df)
-        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),'ONEUSDT', 'Buy')
+        size, entry, stoploss, pyl = dt.get_position("Buy",working_coin,df)
+        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),working_coin, 'Buy')
         graph_2 = {
             'data': figure_2.data,
             'layout': figure_2.layout
@@ -106,8 +109,8 @@ def update_content(user_input):
         return graph_2, kpi1.display(), kpi2.display(), kpi3.display(), kpi4.display()
         
     elif user_input == 'Short':
-        size, entry, stoploss, pyl = dt.get_position("Sell",'ONEUSDT',df)
-        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),'ONEUSDT', 'Sell')
+        size, entry, stoploss, pyl = dt.get_position("Sell",working_coin,df)
+        figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),working_coin, 'Sell')
         graph_2 = {
             'data': figure_2.data,
             'layout': figure_2.layout
@@ -125,26 +128,21 @@ def update_content(user_input):
         kpi3.set_data("Entry - Profit", "")
         kpi4.set_data("Stoploss", "")
         return graph_2, kpi1.display(), kpi2.display(), kpi3.display(), kpi4.display()
-    
-# Define Callback para la actualización de graph 1
+
+# Define Callback for graph 1 constant update
 @callback(
-    Output('graph1', 'figure'),
-    [Input('graph1-update-interval', 'n_intervals')],
+    Output('graph_1', 'figure', allow_duplicate=True),
+    [Input('graph_1_update_interval', 'n_intervals')],
     prevent_initial_call=True
 )
-def update_graph1(n_intervals):
+def update_graph_1(n_intervals):
 
     # Obtenemos los datos actualizados para graph1
-    df = dt.get_data('ONEUSDT','15')
+    df = dt.get_data(working_coin,'15')
     df = dt.CalculateSupertrend(df)
     df = dt.get_clean_data(df)
 
     # Creamos y devolvemos la figura actualizada para graph1
-    graph1 = gf.create_supertrend_graph(df, 'ONEUSDT')
+    graph_1 = gf.create_supertrend_graph(df, working_coin)
 
-    return graph1
-
-
-
-
-
+    return graph_1
