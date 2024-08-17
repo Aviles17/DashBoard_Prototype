@@ -2,29 +2,15 @@ import dash
 import dash_bootstrap_components as dbc
 from dash import dcc, html
 from dash.dependencies import Input, Output
+from Util.configuration_functions import load_configuration, create_linktree_navbar
+from pages import home_page, coin_page
 
-
-from pages import oneusdt_page, xrpusdt_page, home_page
-
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.CYBORG],suppress_callback_exceptions=True)
+app = dash.Dash(__name__,suppress_callback_exceptions=True)
 server = app.server
 
-# Sidebar style
-SIDEBAR_STYLE = {
-    "position": "fixed",
-    "top": 0,
-    "left": 0,
-    "bottom": 0,
-    "width": "14rem",
-    "padding": "2rem 1rem",
-    "background-color": "#566573",
-}
-CONTENT_STYLE = {
-    "padding": "1rem 1rem",
-    "color": "#FDFEFE",
-    "font-size": "1.4em"
-    
-}
+colors, coin_support = load_configuration("config.json")
+coin_support = coin_support["supported-coins"]
+nav_items, nav_links = create_linktree_navbar(coin_support)
 
 ACT_Img = html.Div(
     children=[
@@ -36,27 +22,18 @@ ACT_Img = html.Div(
 )
 
 # Sidebar navigation links
-navbar = dbc.Nav(
-    [
-        dbc.NavItem(dbc.NavLink("Home", href="/", active="exact")),
-        dbc.NavItem(dbc.NavLink("ONE/USDT", href="/oneusdt", active="exact")),
-        dbc.NavItem(dbc.NavLink("XRP/USDT", href="/xrpusdt", active="exact")),
-        # Add more navigation links as needed
-    ],
-    vertical=True,
-    pills=True,
-)
+navbar = dbc.Nav(nav_items, vertical=True, pills=True, className="custom-nav")
 
 # Sidebar Layout
 sidebar = html.Div(
     [
         ACT_Img,
         html.Hr(),
-        html.P("Account Stock Management", className="lead", style= CONTENT_STYLE),
+        html.Br(),
         navbar,
         html.Hr(),
     ],
-    style=SIDEBAR_STYLE
+    id="SIDEBAR_STYLE"
 )
 
 # Define callbacks for changing the page content
@@ -64,10 +41,8 @@ sidebar = html.Div(
 def display_page(pathname):
     if pathname == "/":
         return home_page.home_page_layout()
-    elif pathname == "/oneusdt":
-        return oneusdt_page.oneusdt_page_layout()
-    elif pathname == "/xrpusdt":
-        return xrpusdt_page.xrpusdt_page_layout()
+    elif pathname in nav_links:
+        return coin_page.general_coin_page_layout(pathname.lstrip('/'))
     else:
         return "404 Page Not Found"
 
@@ -77,10 +52,10 @@ app.layout = html.Div([
     dbc.Container([
         dbc.Row([
             dbc.Col([sidebar], width=2),
-            dbc.Col([html.Div(id="page-content")], width=10),
-        ])
+            dbc.Col([html.Div(id="page-content", className="content-column")], width=10),
+        ], className="container-wrapper")
     ], fluid=True),
-])
+], className="page-wrapper")
 
 if __name__ == "__main__":
     app.run_server(debug=True)

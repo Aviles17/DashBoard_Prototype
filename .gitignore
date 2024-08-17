@@ -5,7 +5,7 @@ Credenciales.py
 #Ignore Assets
 /assets
 #Ignore Virtual Environment
-Dashenv/
+DashEnv/
 #Ignore all the logs
 *.log
 #Ignore all the data
