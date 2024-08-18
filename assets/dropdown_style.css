@@ -1,0 +1,17 @@
+/* assets/custom_styles.css */
+#user-input .Select-placeholder {
+    color: white !important;
+}
+
+#user-input .Select-control {
+    background-color: #919191 !important;
+    border-radius: 1rem !important;
+}
+
+#user-input .Select-menu {
+    background-color: #919191 !important;
+}
+
+#user-input .Select-option {
+    color: white !important;
+}

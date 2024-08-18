@@ -11,9 +11,9 @@ import os
 
 global client, api_key, api_secret
 load_dotenv()
-api_key = os.getenv("API_KEY")
-api_secret = os.getenv("API_SECRET")
-client = HTTP(testnet=False, api_key=api_key, api_secret=api_secret)
+Api_key = os.getenv("API_KEY")
+Api_secret = os.getenv("API_SECRET")
+client = HTTP(testnet=False, api_key=Api_key, api_secret=Api_secret)
 '''
 ###################################################################################
 [Proposito]: Funcion para limpiar la entrada de la informacion del cliente y proveer la informacion de cuenta

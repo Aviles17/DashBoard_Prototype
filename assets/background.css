@@ -1,28 +1,22 @@
-/* Ensure html and body take up the full viewport height and width */
-html, body {
+html, body, .page-wrapper, .container-wrapper, .content-column {
+    height: 100%;
     margin: 0;
     padding: 0;
-    height: 100%;
-    width: 100%;
+    background-color: #2C2C2C;
 }
 
-/* Page wrapper to handle overall layout and background color */
 .page-wrapper {
     display: flex;
-    height: 100vh; /* Full viewport height */
-    background-color: #2C2C2C; /* Your specific grey color */
-}
-
-/* Container wrapper to handle content height */
-.container-wrapper {
-    display: flex;
-    flex: 1; /* Take up remaining space */
     flex-direction: column;
-    overflow: hidden; /* Prevent scrollbars */
 }
 
-/* Ensure content column fills the available space */
+.container-wrapper {
+    flex: 1;
+    display: flex;
+}
+
 .content-column {
-    flex: 1; /* Fill the available space */
-    overflow-y: auto; /* Allow vertical scrolling if needed */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }

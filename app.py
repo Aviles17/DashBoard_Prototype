@@ -15,9 +15,10 @@ nav_items, nav_links = create_linktree_navbar(coin_support)
 ACT_Img = html.Div(
     children=[
         html.Img(
-            src=app.get_asset_url("LogoXD.svg"),
-            style={'height': '100%', 'width': '100%', 'margin': '0px', 'border': '0px', 'padding':'0px'}
-        )
+            src=app.get_asset_url("Logo_S&S_Yellow_Circle.png"),
+            style={'height': '80%', 'width': '80%', 'margin-left': '20px' , 'border': '0px', 'padding':'0px'}
+        ),
+        html.P("S&S Investment", style={'textAlign': 'center', 'fontSize': '25px', 'fontWeight': 'bold', 'color': colors['color-gold']}),
     ],
 )
 
@@ -58,4 +59,4 @@ app.layout = html.Div([
 ], className="page-wrapper")
 
 if __name__ == "__main__":
-    app.run_server(debug=False)
+    app.run_server(debug=True)

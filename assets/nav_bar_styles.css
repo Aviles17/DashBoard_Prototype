@@ -20,7 +20,7 @@ and styles the padding and border-radius for a button-like appearance
     text-align: center;
     font-size: 1rem; 
     text-decoration: none; /* Remove underline from links */
-    width: 11.5625rem;
+    width: 8.5rem;
     display: flex; /* Use flexbox to align items */
     align-items: center; 
     justify-content: center; 
@@ -50,7 +50,7 @@ Changes the background to gold and the text color to black when the button is se
     top: 0;
     left: 0;
     bottom: 0;
-    width: 14rem;
+    width: 11rem;
     padding: 2rem 1rem;
     background-color: #131313;
 }

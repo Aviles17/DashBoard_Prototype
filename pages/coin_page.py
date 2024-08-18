@@ -34,55 +34,74 @@ def general_coin_page_layout(coin:str):
             {'label': 'Long Orders', 'value': 'Long'},
             {'label': 'Short Orders', 'value': 'Short'}
         ],
-        style={"color":"black"}
+        style={
+        "color": "white",
+        "background-color": "#919191",
+        "border-radius": "1rem",
+        }
     )
-
+    global kpi1, kpi2, kpi3, kpi4
     #Define KPI graphic object with class
     kpi1 = kpi("KPI 1", "Value 1",1)
     kpi2 = kpi("KPI 2", "Value 2",2)
     kpi3 = kpi("KPI 3", "Value 3",3)
     kpi4 = kpi("KPI 4", "Value 4",4)
-
-    #Define titles
-    title2 = html.H3(f"{working_coin} Positions")
-    title1 = html.H3(f"{working_coin} Live Chart")
     
     # Define the overall layout of the page
     layout = dbc.Container([
-        dcc.Interval(
-        id='graph_1_update_interval',
-        interval=60*1000,  # Update every 5 minutes (in milliseconds)
-        n_intervals=0,
-        ),
         dbc.Row([
-            dbc.Col(title1, md=12),  # Place the title in a single column
-        ], className="mb-4"),
-        
-        dbc.Row([
-            dbc.Col(graph_1),  # Place static graph_1 in a single column
-        ], className="mb-4"),
-        
-        dbc.Row([
-            dbc.Col(title2, md=12),  # Place the title in a single column
-        ], className="mb-4"),
+            dbc.Col(f"{working_coin} Managment", style={"color": "white","font-size": "2rem", "padding-top": "1rem", "padding-left": "14.5rem", "padding-bottom": "1rem"})]),
+
+        html.Br(),
 
         dbc.Row([
-            dbc.Col(user_input, md=4),  # Place the dropdown in the first column
-        ], className="mb-4"),
+            dbc.Col(
+                dbc.Card([
+                    dbc.CardHeader("Live Chart", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem", "padding-left": "1rem"}),
+                    dbc.CardBody(
+                        dbc.Col(graph_1)
+                    )
+                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "985px", "border-radius": "1rem"})
+            )
+        ]),
+
+        html.Br(),
+        html.Br(),
 
         dbc.Row([
-            dbc.Col(graph_2),  # Place graph_2 in the first column
-        ], id='graph-2-container', className="mb-4"),  # Container for graph_2
+            dbc.Col(
+                dbc.Card([
+                    dbc.CardHeader(
+                        dbc.Row([
+                            dbc.Col(html.P("Position Chart", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem"}), style={"width": "80%"}),
+                            dbc.Col(user_input, style={"width": "20%"})
+                        ], align="center"),
+                        style={"padding-left": "1rem"}
+                    ),
+                    dbc.CardBody(
+                        dbc.Col(graph_2)
+                    )
+                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "985px", "border-radius": "1rem"})
+            )
+        ]),
+
+        html.Br(),
 
         dbc.Row([
-            dbc.Col(kpi1.display(), md=3),  # Place KPI 1 in the first column
-            dbc.Col(kpi2.display(), md=3),  # Place KPI 2 in the second column
-            dbc.Col(kpi3.display(), md=3),  # Place KPI 3 in the third column
-            dbc.Col(kpi4.display(), md=3),  # Place KPI 4 in the fourth column
-        ])
-    ], style={'width': '100%', 'padding': '20px'})
-    
+            dbc.Col(kpi1.display(), width=3),  # Place KPI 1 in the first column
+            dbc.Col(kpi2.display(), width=3),  # Place KPI 2 in the second column
+            dbc.Col(kpi3.display(), width=3),  # Place KPI 3 in the third column
+            dbc.Col(kpi4.display(), width=3),  # Place KPI 4 in the fourth column
+        ], style={
+        "display": "flex", 
+        "justify-content": "space-between", 
+        "margin-left": "14rem",
+        "gap": "20px"
+    }),
+    ], fluid=True)
+
     return layout
+    
 
 # Define a callback to show/hide graph_2 and KPIs based on user input
 @callback(

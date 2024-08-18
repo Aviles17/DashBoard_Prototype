@@ -6,20 +6,22 @@ class kpi:
         self.title = title
         self.data = data
         self.id = id
-        self.color = None
     
     def display(self):
-        layout = dbc.Card(id=f"kpi{self.id}")  # Add id attribute here
-        layout.children = [
-            dbc.CardBody([
-                html.H4(f"{self.title}", className="card-title"),
-                html.P(f"{self.data}", className="card-text"),
-            ])
-        ]
-        return layout
+        return html.Div([
+            html.H4(self.title, style={"font-size": "1.5rem", "padding-top": "1rem", "margin": 0, "text-align": "center"}),
+            html.P(self.data, style={"margin": 0, "text-align": "center"})
+        ], id=f"kpi{self.id}", style={
+            "background-color": "#494949",
+            "border-radius": "1rem",
+            "color": "white",
+            "width": "200px",
+            "padding-bottom": "1rem",
+            "justify-content": "center",
+            "align-items": "center"
+        })
+    
     def set_data(self, title, value):
         self.title = title
         self.data = value
-        
-    def set_color(self, base_data: float, position_side: str):
-        pass
+    
