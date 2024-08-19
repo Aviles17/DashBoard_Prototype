@@ -18,44 +18,83 @@ def home_page_layout():
         figure = gf.create_history_barplot(df)
     )
     
-    graph_2 = dcc.Graph(
-        id="graph_2",
-        figure = gf.create_kpi_piechart(prop_positives, prop_negatives, "Profit vs Losses")
-    )
-    
-    graph_3 = dcc.Graph(
-        id="graph_3",
-        figure = gf.create_kpi_piechart(prop_count_positives, prop_count_negatives, "Count of Profit vs Conut Losses")
-    )
-    
     user_input = dcc.Dropdown(
         id='user-input',
         options=[
             {'label': 'P&L%', 'value': 'Porcentaje'},
             {'label': 'Values', 'value': 'Numerico'}
         ],
-        style={"color":"black"}
+        style={
+        "color": "white",
+        "background-color": "#919191",
+        "border-radius": "1rem",
+        "high": "100px"
+        }
     )
     
     layout = dbc.Container([
+        dbc.Row([
+            dbc.Col(f"General Managment", style={"color": "white","font-size": "2rem", "padding-top": "1rem", "padding-left": "14.5rem", "padding-bottom": "1rem"})]),
+        html.Br(),
+        html.Br(),
+        html.Br(),
         # Add your content for home page here
-        dbc.Row([dbc.Col(user_input, md=4)
-        ], className="mb-4"),
+        dbc.Row([
+            dbc.Col([
+                dbc.Row(user_input, style={"width": "100%"}),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                dbc.Row(kpi0.display()),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                dbc.Row(kpi2.display()),
+                html.Br(),
+                html.Br(),
+                html.Br(),
+                dbc.Row(kpi1.display()),
+            ]),
+            # History of orders graph
+            dbc.Col(
+                dbc.Card([
+                    dbc.CardHeader("History of Orders", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem", "padding-left": "1rem"}),
+                    dbc.CardBody(
+                        dbc.Col(graph_1)
+                    )
+                ], style={"backgroundColor": "#494949", "width": "925px", "border-radius": "1rem"})
+            )
+        ], id='graph_1-container', style={
+                                    "display": "flex", 
+                                    "justify-content": "space-between", 
+                                    "margin-left": "14rem",
+                                    "gap": "15px"}), 
         
+        html.Br(),
+
         dbc.Row([
-            dbc.Col(graph_1),
-        ], id='graph_1-container', className="mb-4"), 
-        dbc.Row([
-            dbc.Col(graph_2),
-            dbc.Col(graph_3)
-        ], id='graph_2-container', className="mb-4"),
-            
-        dbc.Row([
-                dbc.Col(kpi0.display()),
-                dbc.Col(kpi1.display()), 
-                dbc.Col(kpi2.display())
-            ], class_name="mb-4")   
-        ], style={'width': '100%', 'padding': '20px'})
+            dbc.Col(
+                dbc.Card([
+                    dbc.CardHeader("Monthly Effective Rate", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem", "padding-left": "1rem"}),
+                    dbc.CardBody(
+                        dbc.Col(f"")
+                    )
+                ], style={"backgroundColor": "#494949", "width": "565px", "border-radius": "1rem"}),
+            ),
+
+            dbc.Card([
+                    dbc.CardHeader("Revenue per Ticker", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem"}),
+                    dbc.CardBody(
+                        dbc.Col(f"")
+                    )
+                ], style={"backgroundColor": "#494949", "width": "565px", "border-radius": "1rem"}),
+        ], id='graph_1-container', style={
+                                    "display": "flex", 
+                                    "margin-left": "14rem",
+                                    "gap": "15px"}), 
+
+    ])
     return layout
 
 @callback(

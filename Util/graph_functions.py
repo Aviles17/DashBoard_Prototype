@@ -116,14 +116,13 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
 
 def create_history_barplot(plot_df: pd.DataFrame, type_l: str="P&L"):
     # Crear el gráfico de barras con Plotly Express
-    fig = px.bar(plot_df, x="Time", y=type_l, title="Historial de Órdenes",
-                color_discrete_map={'positive': 'green', 'negative': 'red'},
+    fig = px.bar(plot_df, x="Time", y=type_l, title="",
                 labels={"Time": "Tiempo", type_l: "Valor"},)
 
     # Personalizar diseño del gráfico
     fig.update_layout(
-        xaxis_rangeslider_visible=True,
-        plot_bgcolor='black',
+        xaxis_rangeslider_visible=False,
+        plot_bgcolor='#585757',
         xaxis_title='', 
         yaxis_title='', 
         xaxis=dict(
@@ -140,10 +139,11 @@ def create_history_barplot(plot_df: pd.DataFrame, type_l: str="P&L"):
         paper_bgcolor='rgba(0,0,0,0)',
         margin=dict(l=20, r=20, b=20, t=35)
     )
+    fig.update_traces(marker_line_color='black', marker_line_width=0.5)
 
     # Asignar colores basados en el valor positivo/negativo
     fig.data[0].marker.color = [
-        'green' if val >= 0 else 'red' for val in plot_df[type_l]
+        '#FFD700' if val >= 0 else '#919191' for val in plot_df[type_l]
     ]
 
     return fig

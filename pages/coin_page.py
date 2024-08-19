@@ -49,6 +49,11 @@ def general_coin_page_layout(coin:str):
     
     # Define the overall layout of the page
     layout = dbc.Container([
+        dcc.Interval(
+        id='graph_1_update_interval',
+        interval=60*1000,  # Update every 5 minutes (in milliseconds)
+        n_intervals=0,
+        ),
         dbc.Row([
             dbc.Col(f"{working_coin} Managment", style={"color": "white","font-size": "2rem", "padding-top": "1rem", "padding-left": "14.5rem", "padding-bottom": "1rem"})]),
 
@@ -61,7 +66,7 @@ def general_coin_page_layout(coin:str):
                     dbc.CardBody(
                         dbc.Col(graph_1)
                     )
-                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "985px", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "1100px", "border-radius": "1rem"})
             )
         ]),
 
@@ -81,7 +86,7 @@ def general_coin_page_layout(coin:str):
                     dbc.CardBody(
                         dbc.Col(graph_2)
                     )
-                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "985px", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "1100px", "border-radius": "1rem"})
             )
         ]),
 
