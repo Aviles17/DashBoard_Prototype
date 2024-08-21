@@ -16,9 +16,9 @@ ACT_Img = html.Div(
     children=[
         html.Img(
             src=app.get_asset_url("Logo_S&S_Yellow_Circle.png"),
-            style={'height': '80%', 'width': '80%', 'margin-left': '20px' , 'border': '0px', 'padding':'0px'}
+            style={'height': '80%', 'width': '75%', 'margin-left': '10%'}
         ),
-        html.P("S&S Investment", style={'textAlign': 'center', 'fontSize': '25px', 'fontWeight': 'bold', 'color': colors['color-gold']}),
+        html.P("S&S Investment", style={'textAlign': 'center', 'fontSize': '125%', 'fontWeight': 'bold', 'color': colors['color-gold']}),
     ],
 )
 
@@ -53,7 +53,7 @@ app.layout = html.Div([
     dbc.Container([
         dbc.Row([
             dbc.Col([sidebar], width=2),
-            dbc.Col([html.Div(id="page-content", className="content-column")], width=10),
+            dbc.Col([html.Div(id="page-content", className="content-column")], style={"width": "90%"}),
         ], className="container-wrapper")
     ], fluid=True),
 ], className="page-wrapper")

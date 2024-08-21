@@ -154,86 +154,56 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
             size =  float(symbol_res["size"])
             entry =  float(symbol_res["avgPrice"])
             stoploss = float(symbol_res["stopLoss"])
-            leverage = float(symbol_res["leverage"])
-            if(side == 'Sell'):
-                quote_currency = (df['Close'].iloc[-1] - entry)*size*leverage
-                notial = entry*size*leverage
-                pyl = (quote_currency/notial)*-100
-            else:
-                quote_currency = (df['Close'].iloc[-1] - entry)*size*leverage
-                notial = entry*size*leverage
-                pyl = (quote_currency/notial)*100
-            return size, str(entry), str(stoploss), pyl
+            goal_price = (2*entry) - stoploss
+            return size, str(entry), str(stoploss), goal_price
         else:
             return 0, 0, 0, 0
     else:
         return 0, 0, 0, 0
-  
-def get_position_history():
-  start_test_unix = 1710172106699 + 764000000 # 2024-03-21 10:00:30
-  endtime = int(datetime.now().timestamp() * 1000)
-  avg_seven = 604800 * 1000
-  concat_list = []
-  try:
-      for i in range(5):
-        res = client.get_closed_pnl(category="linear", endTime = endtime, limit=100)
-        endtime -= avg_seven
-        concat_list.extend(res["result"]["list"])
 
-      unique_list = [dict(t) for t in {tuple(sorted(d.items())) for d in concat_list}]
-      filtered_list = []
-      for item in unique_list:
-        if int(item["createdTime"]) >= start_test_unix:
-          filtered_list.append(item)
-          
-      return filtered_list
-      
-  except Exception as e:
-      print(f"An exception occurred connecting to Bybit 'get_closed_pnl' endpoint: {e}")
-      return []
-      
-      
-def get_history():
-  history = get_position_history()
-  if len(history) != 0:
-    proto_dataframe = []
-    for register in history:
-      register_list = []
-      register_list.append(register["createdTime"])
-      register_list.append(float(register["closedPnl"]))
-      if register["side"] == "Buy":
-        quote_currency = (float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))*float(register["closedSize"])*float(register["leverage"])
-        notional = float(register["avgEntryPrice"])*float(register["closedSize"])*float(register["leverage"])
-        pyl = (quote_currency/notional)*-100
-      else:
-        quote_currency = (float(register["avgExitPrice"]) - float(register["avgEntryPrice"]))*float(register["closedSize"])*float(register["leverage"])
-        notional = float(register["avgEntryPrice"])*float(register["closedSize"])*float(register["leverage"])
-        pyl = (quote_currency/notional)*100
-        
-      register_list.append(pyl)
-      proto_dataframe.append(register_list)
-      
-    df = pd.DataFrame(proto_dataframe, columns=['Time','Profit','P&L'])
-    df = df.sort_values(by='Time')
-    df['P&L'] *= 100
-    df['Time'] = pd.to_datetime(pd.to_numeric(df['Time']), unit='ms')
-    df['Time'] = df['Time'].dt.strftime('%m/%d/%H:%S')
-    prop_positives, prop_negatives, prop_count_positives, prop_count_negatives = sum_and_count_positives_negatives(df, 'Profit')
-    df.to_csv('History.csv')
-    return df, df['Profit'].sum(), df['P&L'].mean(), prop_positives, prop_negatives, prop_count_positives, prop_count_negatives
-      
+def get_position_history(defined_interval: str = "m"): # 'm' for montly, 'a' for all time
+    # Convert both to Unix time
+    if defined_interval == "m":
+        start_time = int(time.time() *1000) - (31 * 24 * 60 * 60 * 1000)
+    if defined_interval == "a":
+        timezone = pytz.timezone("Etc/GMT+5")
+        date = datetime(2024,7,20,0,0,0, tzinfo=timezone) # July 20 of 2024
+        utc_date = date.astimezone(pytz.utc)
 
-def sum_and_count_positives_negatives(df: pd.DataFrame, column_name: str):
-  # Filtrar los valores positivos y negativos
-  positives = df[df[column_name] > 0][column_name]
-  negatives = df[df[column_name] < 0][column_name]
-  
-  sum_positives = positives.sum()
-  sum_negatives = negatives.sum()
-  count_positives = positives.count()
-  count_negatives = negatives.count()
-  prop_positives = sum_positives / (sum_positives + abs(sum_negatives))
-  prop_negatives = abs(sum_negatives) / (sum_positives + abs(sum_negatives))
-  prop_count_positives = count_positives / (count_positives + count_negatives)
-  prop_count_negatives = count_negatives / (count_positives + count_negatives)
-  return prop_positives, prop_negatives, prop_count_positives, prop_count_negatives
+        start_time = int(utc_date.timestamp()*1000)
+    concat_list = []
+    #Get the first hsitory of 7 days
+    res = client.get_closed_pnl(category="linear", limit=100)
+    concat_list.extend(res["result"]["list"])
+    endtime = int(res["result"]["list"][-1]["createdTime"])
+    try:
+        while start_time <= endtime:
+            res = client.get_closed_pnl(category="linear",endTime = endtime, limit=100)
+            endtime = int(res["result"]["list"][-1]["createdTime"])
+            concat_list.extend(res["result"]["list"])
+        return concat_list
+    except Exception as e:
+        print(f"An exception occurred connecting to Bybit 'get_closed_pnl' endpoint: {e}")
+        return []
+
+def get_kpi_history(supported_coins: list):
+    history = get_position_history()
+    if len(history) != 0:
+        proto_dataframe = []
+        for register in history:
+            register_list = []
+            register_list.append(register["createdTime"])
+            register_list.append(float(register["closedPnl"]))
+            register_list.append(register["symbol"])
+            proto_dataframe.append(register_list)
+
+        df = pd.DataFrame(proto_dataframe, columns=['Time','Profit','Symbol'])
+        df = df.sort_values(by='Time')
+        df['Time'] = pd.to_datetime(pd.to_numeric(df['Time']), unit='ms')
+        df['Time'] = df['Time'].dt.strftime('%m/%d/%H:%S')
+        coin_cumulative = get_cumulative(df, supported_coins)
+        return df, df['Profit'].sum(), df['Profit'].mean(), coin_cumulative
+
+def get_cumulative(df: pd.DataFrame, supported_coins: list)->dict:
+    cumulative_sum = df.groupby("Symbol")["Profit"].sum()
+    return cumulative_sum.to_dict()

@@ -66,7 +66,7 @@ def general_coin_page_layout(coin:str):
                     dbc.CardBody(
                         dbc.Col(graph_1)
                     )
-                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "1100px", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "70rem", "border-radius": "1rem"})
             )
         ]),
 
@@ -86,7 +86,7 @@ def general_coin_page_layout(coin:str):
                     dbc.CardBody(
                         dbc.Col(graph_2)
                     )
-                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "1100px", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "70rem", "border-radius": "1rem"})
             )
         ]),
 
@@ -101,7 +101,7 @@ def general_coin_page_layout(coin:str):
         "display": "flex", 
         "justify-content": "space-between", 
         "margin-left": "14rem",
-        "gap": "20px"
+        "gap": "6.6rem"
     }),
     ], fluid=True)
 
@@ -120,28 +120,28 @@ def general_coin_page_layout(coin:str):
 )
 def update_content(user_input):
     if user_input == 'Long':
-        size, entry, stoploss, pyl = dt.get_position("Buy",working_coin,df)
+        size, entry, stoploss, goal_price = dt.get_position("Buy",working_coin,df)
         figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),working_coin, 'Buy')
         graph_2 = {
             'data': figure_2.data,
             'layout': figure_2.layout
         }
         kpi1.set_data("Order Size", size)
-        kpi2.set_data("P&L %", pyl)
-        kpi3.set_data("Entry - Profit", entry)
+        kpi2.set_data("Profit", goal_price)
+        kpi3.set_data("Entry", entry)
         kpi4.set_data("Stoploss",stoploss)
         return graph_2, kpi1.display(), kpi2.display(), kpi3.display(), kpi4.display()
         
     elif user_input == 'Short':
-        size, entry, stoploss, pyl = dt.get_position("Sell",working_coin,df)
+        size, entry, stoploss, goal_price = dt.get_position("Sell",working_coin,df)
         figure_2 = gf.create_order_graph(df,float(entry),float(stoploss),working_coin, 'Sell')
         graph_2 = {
             'data': figure_2.data,
             'layout': figure_2.layout
         }
         kpi1.set_data("Order Size", size)
-        kpi2.set_data("P&L %", pyl)
-        kpi3.set_data("Entry - Profit", entry)
+        kpi2.set_data("Profit", goal_price)
+        kpi3.set_data("Entry", entry)
         kpi4.set_data("Stoploss",stoploss)
         return figure_2, kpi1.display(), kpi2.display(), kpi3.display(), kpi4.display()
     else:

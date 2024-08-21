@@ -14,13 +14,13 @@ and styles the padding and border-radius for a button-like appearance
     background-color: #1F1F1F;
     color: white;
     border-radius: 1.25rem;
-    padding: 0.625rem 1.25rem;
-    margin-right: 0.625rem;
-    margin-bottom: 1.875rem;
+    padding: 7% 10%;
+    margin-right: 10%;
+    margin-bottom: 18%;
     text-align: center;
-    font-size: 1rem; 
+    font-size: 100%; 
     text-decoration: none; /* Remove underline from links */
-    width: 8.5rem;
+    width: 78%;
     display: flex; /* Use flexbox to align items */
     align-items: center; 
     justify-content: center; 
@@ -50,7 +50,7 @@ Changes the background to gold and the text color to black when the button is se
     top: 0;
     left: 0;
     bottom: 0;
-    width: 11rem;
-    padding: 2rem 1rem;
+    width: 13%;
+    padding: 3% 1%;
     background-color: #131313;
 }

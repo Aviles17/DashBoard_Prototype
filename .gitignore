@@ -10,3 +10,5 @@ DashEnv/
 *.csv
 #Ignore enviroment variables
 .env
+#Ignorar archivos de pruebas
+pruebas_1.py
