@@ -16,7 +16,7 @@ ACT_Img = html.Div(
     children=[
         html.Img(
             src=app.get_asset_url("Logo_S&S_Yellow_Circle.png"),
-            style={'height': '80%', 'width': '75%', 'margin-left': '10%'}
+            style={'height': '80%', 'width': '75%', 'margin-left': '12%'}
         ),
         html.P("S&S Investment", style={'textAlign': 'center', 'fontSize': '125%', 'fontWeight': 'bold', 'color': colors['color-gold']}),
     ],
