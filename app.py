@@ -49,11 +49,11 @@ def display_page(pathname):
 
 # Main layout
 app.layout = html.Div([
-    dcc.Location(id="url", refresh=False),
+    dcc.Location(id="url", refresh=True),
     dbc.Container([
         dbc.Row([
-            dbc.Col([sidebar], width=2),
-            dbc.Col([html.Div(id="page-content", className="content-column")], style={"width": "90%"}),
+            dbc.Col([sidebar]),
+            dbc.Col([html.Div(id="page-content")]),
         ], className="container-wrapper")
     ], fluid=True),
 ], className="page-wrapper")

@@ -31,7 +31,7 @@ def home_page_layout():
     
     layout = dbc.Container([
         dbc.Row([
-            dbc.Col(f"General Managment", style={"color": "white","font-size": "2rem", "padding-top": "1.5%", "padding-left": "18.5%", "padding-bottom": "2%"})]),
+            dbc.Col(f"General Managment", style={"color": "white","font-size": "2rem", "padding-top": "1.5%", "padding-left": "19.5%", "padding-bottom": "2%"})]),
         html.Br(),
         html.Br(),
         # Add your content for home page here
@@ -54,12 +54,12 @@ def home_page_layout():
                     dbc.CardBody(
                         dbc.Col(graph_1_home)
                     )
-                ], style={"backgroundColor": "#494949", "width": "55.5rem", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "width": "65.5vw", "border-radius": "1rem"})
             )
         ], id='graph_1_home-container', style={
                                     "display": "flex", 
                                     "justify-content": "space-between", 
-                                    "margin-left": "18.5%",
+                                    "margin-left": "19.25%",
                                     "gap": "2%"}), 
         
         html.Br(),
@@ -67,26 +67,26 @@ def home_page_layout():
         dbc.Row([
             dbc.Col(
                 dbc.Card([
-                    dbc.CardHeader("Monthly Effective Rate", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem", "padding-left": "1rem"}),
+                    dbc.CardHeader("Monthly Effective Rate", style={"color": "white","font-size": "1.5rem", "padding-top": "3%", "padding-left": "3%"}),
                     dbc.CardBody(
                         dbc.Col(graph_2_home),
-                        style = {"padding-left": "3.6%"}
+                        style = {"padding-left": "9%"}
                     )
-                ], style={"backgroundColor": "#494949", "width": "34rem", "border-radius": "1rem"}),
+                ], style={"backgroundColor": "#494949", "width": "40vw", "border-radius": "1rem"}),
             ),
 
             dbc.Card([
-                    dbc.CardHeader("Revenue per Ticker", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem", "padding-left": "1rem"}),
+                    dbc.CardHeader("Revenue per Ticker", style={"color": "white","font-size": "1.5rem", "padding-top": "3%", "padding-left": "3%"}),
                     dbc.CardBody(
                         dbc.Col(graph_3_home),
-                        style = {"padding-left": "7%"}
+                        style = {"padding-left": "16%"}
                     )
-                ], style={"backgroundColor": "#494949", "width": "34rem", "border-radius": "1rem"}),
+                ], style={"backgroundColor": "#494949", "width": "43vw", "border-radius": "1rem"}),
         ], style={
                                     "display": "flex", 
-                                    "margin-left": "18.5%",
+                                    "margin-left": "19.25%",
                                     "gap": "2%",
-                                    "width": "72rem"}), 
+                                    "width": "82vw"}), 
         html.Br()
 
     ])

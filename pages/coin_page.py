@@ -47,7 +47,7 @@ def general_coin_page_layout(coin:str):
     kpi3 = kpi("KPI 3", "Value 3",3)
     kpi4 = kpi("KPI 4", "Value 4",4)
     
-    # Define the overall layout of the page
+# Define the overall layout of the page
     layout = dbc.Container([
         dcc.Interval(
         id='graph_1_update_interval',
@@ -55,18 +55,18 @@ def general_coin_page_layout(coin:str):
         n_intervals=0,
         ),
         dbc.Row([
-            dbc.Col(f"{working_coin} Managment", style={"color": "white","font-size": "2rem", "padding-top": "1rem", "padding-left": "14.5rem", "padding-bottom": "1rem"})]),
+            dbc.Col(f"{working_coin} Managment", style={"color": "white","font-size": "2rem", "padding-top": "1.5%", "padding-left": "20.5%", "padding-bottom": "3%"})]),
 
         html.Br(),
 
         dbc.Row([
             dbc.Col(
                 dbc.Card([
-                    dbc.CardHeader("Live Chart", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem", "padding-left": "1rem"}),
+                    dbc.CardHeader("Live Chart", style={"color": "white", "font-size": "1.5rem", "padding-top": "1.5%", "padding-left": "1.5%"}),
                     dbc.CardBody(
                         dbc.Col(graph_1)
                     )
-                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "70rem", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "margin-left": "20%", "width": "81.5vw", "border-radius": "1rem"})
             )
         ]),
 
@@ -78,30 +78,30 @@ def general_coin_page_layout(coin:str):
                 dbc.Card([
                     dbc.CardHeader(
                         dbc.Row([
-                            dbc.Col(html.P("Position Chart", style={"color": "white","font-size": "1.5rem", "padding-top": "1rem"}), style={"width": "80%"}),
+                            dbc.Col(html.P("Position Chart", style={"color": "white","font-size": "1.5rem", "padding-top": "1.5%"})),
                             dbc.Col(user_input, style={"width": "20%"})
                         ], align="center"),
-                        style={"padding-left": "1rem"}
+                        style={"padding-left": "1.5%"}
                     ),
                     dbc.CardBody(
                         dbc.Col(graph_2)
                     )
-                ], style={"backgroundColor": "#494949", "margin-left": "14rem", "width": "70rem", "border-radius": "1rem"})
+                ], style={"backgroundColor": "#494949", "margin-left": "20%", "width": "81.5vw", "border-radius": "1rem"})
             )
         ]),
 
         html.Br(),
 
         dbc.Row([
-            dbc.Col(kpi1.display(), width=3),  # Place KPI 1 in the first column
-            dbc.Col(kpi2.display(), width=3),  # Place KPI 2 in the second column
-            dbc.Col(kpi3.display(), width=3),  # Place KPI 3 in the third column
-            dbc.Col(kpi4.display(), width=3),  # Place KPI 4 in the fourth column
+            dbc.Col(kpi1.display()),  # Place KPI 1 in the first column
+            dbc.Col(kpi2.display()),  # Place KPI 2 in the second column
+            dbc.Col(kpi3.display()),  # Place KPI 3 in the third column
+            dbc.Col(kpi4.display()),  # Place KPI 4 in the fourth column
         ], style={
         "display": "flex", 
         "justify-content": "space-between", 
-        "margin-left": "14rem",
-        "gap": "6.6rem"
+        "margin-left": "20%",
+        "gap": "11%"
     }),
     ], fluid=True)
 

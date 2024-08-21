@@ -9,14 +9,14 @@ class kpi:
     
     def display(self):
         return html.Div([
-            html.H4(self.title, style={"font-size": "1.5rem", "padding-top": "1rem", "margin": 0, "text-align": "center"}),
+            html.H4(self.title, style={"font-size": "1.5rem", "padding-top": "5%", "margin": 0, "text-align": "center"}),
             html.P(self.data, style={"margin": 0, "text-align": "center"})
         ], id=f"kpi{self.id}", style={
             "background-color": "#494949",
             "border-radius": "1rem",
             "color": "white",
-            "width": "200px",
-            "padding-bottom": "1rem",
+            "width": "15vw",
+            "padding-bottom": "8%",
             "justify-content": "center",
             "align-items": "center"
         })

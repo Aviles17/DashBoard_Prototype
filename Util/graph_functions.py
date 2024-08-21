@@ -178,8 +178,8 @@ def create_monthly_efective_rate_graph(profit: float, actual_amount: float):
         font={"family": "Helvetica",'size': 18, 'color': "white"},
         plot_bgcolor="#494949",
         paper_bgcolor="#494949",
-        width=500,
-        height=400 
+        width=400,
+        height=300 
     )
     return fig
 
@@ -195,8 +195,8 @@ def create_barplot_per_ticker(cumulative_sum: dict):
         font={"family": "Helvetica",'size': 18, 'color': "white"},
         plot_bgcolor="#494949",
         paper_bgcolor="#494949",
-        width=500,
-        height=400,
+        width=400,
+        height=300,
         yaxis=dict(
             showgrid=True,
             gridcolor='dimgray',
