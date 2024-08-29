@@ -1,0 +1,22 @@
+html, body, .page-wrapper, .container-wrapper, .content-column {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    background-color: #2C2C2C;
+}
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.container-wrapper {
+    flex: 1;
+    display: flex;
+}
+
+.content-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}

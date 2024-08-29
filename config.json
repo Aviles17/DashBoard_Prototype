@@ -1,0 +1,15 @@
+[
+    {
+        "color-black": "#000000",
+        "color-grey": "#585757",
+        "color-gold": "#FFD700",
+        "color-white": "#FFFFFF",
+        "color-graph-divs": "#494949",
+        "color-button-navbar": "#1F1F1F",
+        "color-navbar": "#131313",
+        "color-backgroud": "#2C2C2C"
+    },
+    {
+        "supported-coins": ["XRPUSDT","ONEUSDT"]
+    }
+]

@@ -2,13 +2,13 @@
 Credenciales.py
 #Ignore all the cache
 **/__pycache__/
-#Ignore Assets
-/assets
 #Ignore Virtual Environment
-Dashenv/
+DashEnv/
 #Ignore all the logs
 *.log
 #Ignore all the data
 *.csv
 #Ignore enviroment variables
 .env
+#Ignorar archivos de pruebas
+pruebas_1.py

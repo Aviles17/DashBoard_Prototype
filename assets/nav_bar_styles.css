@@ -1,0 +1,56 @@
+
+.custom-nav {
+    display: flex;
+    flex-direction: column; /* Stack items vertically */
+    justify-content: flex-start; /* Aligns items to the start, adjust as needed */
+}
+
+/*
+Inactive link
+Sets the background to dark gray, text color to white, 
+and styles the padding and border-radius for a button-like appearance
+*/
+.custom-nav .nav-link {
+    background-color: #1F1F1F;
+    color: white;
+    border-radius: 1.25rem;
+    padding: 7% 10%;
+    margin-right: 10%;
+    margin-bottom: 18%;
+    text-align: center;
+    font-size: 100%; 
+    text-decoration: none; /* Remove underline from links */
+    width: 78%;
+    display: flex; /* Use flexbox to align items */
+    align-items: center; 
+    justify-content: center; 
+}
+
+/*
+Inactive link pseudo - selected
+Slightly lightens the background when hovered over to indicate interactivity
+*/
+.custom-nav .nav-link:hover {
+    background-color: #c0c0c0;
+    color: white;
+}
+/*
+Link selected
+Changes the background to gold and the text color to black when the button is selected or focused
+*/
+.custom-nav .nav-link.active, 
+.custom-nav .nav-link:focus {
+    background-color: #FFD700;
+    color: black;
+    outline: none;
+}
+
+#SIDEBAR_STYLE{
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 13%;
+    padding: 3% 1%;
+    background-color: #131313;
+}
