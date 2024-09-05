@@ -41,41 +41,67 @@ def Get_Balance(symbol: str):
 [Retorno]: Dataframe de pandas con la informacion solicitada
 ###################################################################################
 '''
-def get_data(symbol: str,interval: str,unixtimeinterval: int = 1800000):
-  list_registers = []
-  DATA_200 = 180000
-  now = datetime.now()
-  unixtime = int(time.mktime(now.timetuple()))
-  since = unixtime
-  while(unixtimeinterval != 0):
-    start= str(since - unixtimeinterval)
-    url = 'http://api.bybit.com/v5/market/kline?symbol='+symbol+'&interval='+interval+'&from='+str(start)
-    while(True):
-      try:
-        data = requests.get(url).json()
-        break
-      except requests.exceptions.ConnectionError as e:
-        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
-        time.sleep(10)
-      except requests.RequestException as e:
-        print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
-        time.sleep(10)
-    df = pd.DataFrame(data['result']["list"], columns=['Time','Open','High','Low','Close','Volume', 'Turnover'])
-    df['Time'] = pd.to_numeric(df['Time'])
-    df = df.drop_duplicates()
-    df['Time'] = df['Time'].apply(lambda x: datetime.fromtimestamp(x / 1000, tz=pytz.UTC))
-    target_timezone = pytz.timezone('Etc/GMT+5')
-    df['Time'] = df['Time'].apply(lambda x: x.astimezone(target_timezone))
-    #df.rename(columns={'open':'Open','high':'High','low':'Low','close':'Close','volume':'Volume','open_time':'Time'}, inplace=True)
-    df = df.drop(columns=['Turnover'])
-    list_registers.append(df)
-    unixtimeinterval = unixtimeinterval - DATA_200
-    
-  concatenated_df = pd.concat([list_registers[0], list_registers[1], list_registers[2], list_registers[3], list_registers[4], list_registers[5], list_registers[6], list_registers[7], list_registers[8], list_registers[9]], axis=0)
-  concatenated_df = concatenated_df.reset_index(drop=True)
-  float_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-  concatenated_df[float_columns] = concatenated_df[float_columns].astype(float)
-  return concatenated_df
+def get_data(symbol: str,interval: str):
+    list_registers = []
+    unix_endtime = None
+    for i in range(0,3):
+        if i == 0: #Primer llamado: Historial de mercado con tiempo actual
+            url = 'http://api.bybit.com/v5/market/kline?symbol='+symbol+'&interval='+interval+'&limit='+str(1000)
+            while(True):
+                try:
+                    data = requests.get(url).json()
+                    unix_endtime = data['result']["list"][-1][0]
+                    break
+                except requests.exceptions.ConnectionError as e:
+                    print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+                except requests.RequestException as e:
+                    print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+                except Exception as e:
+                    print(f"An error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+        if i == 1 and unix_endtime != None:
+            url = 'http://api.bybit.com/v5/market/kline?symbol='+symbol+'&interval='+interval+'&limit='+str(1000)+'&end='+str(unix_endtime)
+            while(True):
+                try:
+                    data = requests.get(url).json()
+                    unix_endtime = data['result']["list"][-1][0]
+                    break
+                except requests.exceptions.ConnectionError as e:
+                    print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+                except requests.RequestException as e:
+                    print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+        if i == 2 and unix_endtime != None:
+            url = 'http://api.bybit.com/v5/market/kline?symbol='+symbol+'&interval='+interval+'&limit='+str(200)+'&end='+str(unix_endtime)
+            while(True):
+                try:
+                    data = requests.get(url).json()
+                    break
+                except requests.exceptions.ConnectionError as e:
+                    print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+                except requests.RequestException as e:
+                    print(f"Connection error occurred: {e}, Retrying in 10 seconds...\n")
+                    time.sleep(10)
+        #Crear proto dataframe y añadir a lista
+        df = pd.DataFrame(data['result']["list"], columns=['Time','Open','High','Low','Close','Volume', 'Turnover'])
+        df['Time'] = pd.to_numeric(df['Time'])
+        df = df.drop_duplicates()
+        df['Time'] = df['Time'].apply(lambda x: datetime.fromtimestamp(x / 1000, tz=pytz.UTC))
+        target_timezone = pytz.timezone('Etc/GMT+5')
+        df['Time'] = df['Time'].apply(lambda x: x.astimezone(target_timezone))
+        df = df.drop(columns=['Turnover'])
+        list_registers.append(df)
+
+    concatenated_df = pd.concat([list_registers[0], list_registers[1], list_registers[2]], axis=0)
+    concatenated_df = concatenated_df.reset_index(drop=True)
+    float_columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+    concatenated_df[float_columns] = concatenated_df[float_columns].astype(float)
+    concatenated_df = concatenated_df.drop_duplicates()
+    return concatenated_df
 
 '''
 ###################################################################################
@@ -132,7 +158,7 @@ def get_clean_data(df: pd.DataFrame):
     #Limpiar el dataframe
     if df['DEMA800'].isnull().values.any():
         df.dropna(subset=['DEMA800'], inplace=True)
-    return df.head(200)
+    return df.head(500)
 
 def get_order_info(symb: str):
   try:
