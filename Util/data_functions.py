@@ -324,18 +324,6 @@ def update_df(data: pd.DataFrame, test_length: int = 800):
     return FULL_original_order_klin
 
 
-"""
-###################################################################################
-"""
-
-
-def get_clean_data(df: pd.DataFrame):
-    # Limpiar el dataframe
-    if df['DEMA800'].isnull().values.any():
-        df.dropna(subset=['DEMA800'], inplace=True)
-    return df.head(500)
-
-
 def get_order_info(symb: str):
     try:
         positions = client.get_positions(category='linear', symbol=symb)
