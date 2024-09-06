@@ -139,7 +139,7 @@ def get_data(symbol: str, interval: str):
 """
 
 
-def ta_sma(source, length, rounded=5) -> float:
+def ta_sma(source, length, rounded=7) -> float:
 
     sum_length = sum(source)
     SMA = round(sum_length/length, rounded)
@@ -158,7 +158,7 @@ def ta_sma(source, length, rounded=5) -> float:
 """
 
 
-def ta_ema(source: pd.Series, length: int, rounded=5, ):
+def ta_ema(source: pd.Series, length: int, rounded=7, ):
 
     alpha = 2 / (length + 1)
 
@@ -202,7 +202,7 @@ def ta_ema(source: pd.Series, length: int, rounded=5, ):
 """
 
 
-def ta_second_ema(source, length, rounded=5):
+def ta_second_ema(source, length, rounded=7):
 
     alpha = 2 / (length + 1)
 
@@ -251,7 +251,7 @@ def ta_second_ema(source, length, rounded=5):
 """
 
 
-def dema(df: pd.DataFrame, length: int = 800, rounded=5):
+def dema(df: pd.DataFrame, length: int = 800, rounded=7):
 
     src = df['Close']
 
