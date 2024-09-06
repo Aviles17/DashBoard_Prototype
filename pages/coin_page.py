@@ -15,7 +15,7 @@ def general_coin_page_layout(coin: str):
     df = dt.get_data(working_coin, '15')
     df = dt.CalculateSupertrend(df)
     df = dt.update_df(df)
-    df = df.head(250)
+    df = df.head(400)
 
     # Graph 1 -> Live Chart
     graph_1 = dcc.Graph(
@@ -175,7 +175,7 @@ def update_graph_1(n_intervals):
     df = dt.get_data(working_coin, '15')
     df = dt.CalculateSupertrend(df)
     df = dt.update_df(df)
-    df = df.head(250)
+    df = df.head(400)
 
     # Creamos y devolvemos la figura actualizada para graph1
     graph_1 = gf.create_supertrend_graph(df, working_coin)
