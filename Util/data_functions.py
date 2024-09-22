@@ -289,10 +289,10 @@ def CalculateSupertrend(data: pd.DataFrame):
         low=reversed_df['Low'],
         close=reversed_df['Close'],
         period=10,
-        multiplier=2)
+        multiplier=3)
 
-    Temp_Trend = Temp_Trend.rename(columns={'SUPERT_7_2.0': 'Supertrend', 'SUPERTd_7_2.0': 'Polaridad',
-                                   'SUPERTl_7_2.0': 'ST_Inferior', 'SUPERTs_7_2.0': 'ST_Superior'})
+    Temp_Trend = Temp_Trend.rename(columns={'SUPERT_7_3.0': 'Supertrend', 'SUPERTd_7_3.0': 'Polaridad',
+                                   'SUPERTl_7_3.0': 'ST_Inferior', 'SUPERTs_7_3.0': 'ST_Superior'})
 
     df_merge = pd.merge(data, Temp_Trend, left_index=True, right_index=True)
 
