@@ -281,7 +281,7 @@ def dema(df: pd.DataFrame, length: int = 800, rounded=7):
 '''
 
 
-def CalculateSupertrend(data: pd.DataFrame):
+def CalculateSupertrend(data: pd.DataFrame, mult: int):
 
     reversed_df = data.iloc[::-1]
     Temp_Trend = ta.supertrend(
@@ -289,14 +289,18 @@ def CalculateSupertrend(data: pd.DataFrame):
         low=reversed_df['Low'],
         close=reversed_df['Close'],
         period=10,
-        multiplier=2)
+        multiplier=mult)
+    
+    ATR = ta.atr(high=reversed_df['High'], low=reversed_df['Low'], close=reversed_df['Close'], length=14)
 
-    Temp_Trend = Temp_Trend.rename(columns={'SUPERT_7_2.0': 'Supertrend', 'SUPERTd_7_2.0': 'Polaridad',
-                                   'SUPERTl_7_2.0': 'ST_Inferior', 'SUPERTs_7_2.0': 'ST_Superior'})
+    Temp_Trend = Temp_Trend.rename(columns={f'SUPERT_7_{mult}.0': 'Supertrend', f'SUPERTd_7_{mult}.0': 'Polaridad',
+                                   f'SUPERTl_7_{mult}.0': 'ST_Inferior', f'SUPERTs_7_{mult}.0': 'ST_Superior'})
 
     df_merge = pd.merge(data, Temp_Trend, left_index=True, right_index=True)
+    df_merge = pd.merge(df_merge, ATR, left_index=True, right_index=True)
 
-    return df_merge
+    df_merge_ma_final = update_df(df_merge) # Actualizar el dataframe con las medias moviles (EMA , DEMA)
+    return df_merge_ma_final
 
 
 """

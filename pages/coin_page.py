@@ -12,8 +12,8 @@ def general_coin_page_layout(coin: str):
 
     # Initialize variables for later usage
     working_coin = coin.upper()
-    df = dt.get_data(working_coin, '15')
-    df = dt.CalculateSupertrend(df)
+    df = dt.get_data(working_coin, '30')
+    df = dt.CalculateSupertrend(df, 3)
     df = dt.update_df(df)
     df = df.head(400)
 
