@@ -10,6 +10,6 @@
         "color-backgroud": "#2C2C2C"
     },
     {
-        "supported-coins": ["XRPUSDT","ONEUSDT"]
+        "supported-coins": ["XRPUSDT","ONEUSDT", "DOTUSDT"]
     }
 ]
