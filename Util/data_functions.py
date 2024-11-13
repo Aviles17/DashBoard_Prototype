@@ -25,8 +25,8 @@ client = HTTP(testnet=False, api_key=Api_key, api_secret=Api_secret)
 
 def Get_Balance(symbol: str):
     filt_Balance = 0
-    while (filt_Balance == 0):
-        balance = client.get_coin_balance(accountType="CONTRACT", coin=symbol)
+    while(filt_Balance == 0):
+        balance = client.get_coin_balance(accountType="UNIFIED", coin=symbol)
         if balance is not None:
             filt_Balance = balance["result"]["balance"]["walletBalance"]
         else:
@@ -356,19 +356,19 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
     else:
         return 0, 0, 0, 0
 
+def get_position_history(defined_interval: str = "m"): # 'm' for montly, 'a' for all time
+  timezone = pytz.timezone("Etc/GMT+5")
+  date_origin = datetime(2024,10,27,0,0,0, tzinfo=timezone) # Octubre 23 del 2024
+  utc_date_origin = date_origin.astimezone(pytz.utc)
+  ms_date_origin = int(utc_date_origin.timestamp()*1000)
+  # Convert both to Unix time
+  if defined_interval == "m":
+    start_time = int(time.time() *1000) - (31 * 24 * 60 * 60 * 1000)
+  else:
+    start_time = int(time.time() *1000) - (365 * 24 * 60 * 60 * 1000)
+  if start_time < ms_date_origin:
+    start_time = ms_date_origin
 
-# 'm' for montly, 'a' for all time
-def get_position_history(defined_interval: str = "m"):
-    # Convert both to Unix time
-    if defined_interval == "m":
-        start_time = int(time.time() * 1000) - (31 * 24 * 60 * 60 * 1000)
-    if defined_interval == "a":
-        timezone = pytz.timezone("Etc/GMT+5")
-        date = datetime(2024, 7, 20, 0, 0, 0,
-                        tzinfo=timezone)  # July 20 of 2024
-        utc_date = date.astimezone(pytz.utc)
-
-        start_time = int(utc_date.timestamp()*1000)
     concat_list = []
     # Get the first hsitory of 7 days
     res = client.get_closed_pnl(category="linear", limit=100)
@@ -376,10 +376,12 @@ def get_position_history(defined_interval: str = "m"):
     endtime = int(res["result"]["list"][-1]["createdTime"])
     try:
         while start_time <= endtime:
-            res = client.get_closed_pnl(
-                category="linear", endTime=endtime, limit=100)
-            endtime = int(res["result"]["list"][-1]["createdTime"])
-            concat_list.extend(res["result"]["list"])
+            res = client.get_closed_pnl(category="linear",endTime = endtime, limit=100)
+            if len(res["result"]["list"]) != 0:
+              endtime = int(res["result"]["list"][-1]["createdTime"])
+              concat_list.extend(res["result"]["list"])
+            else:
+              break
         return concat_list
     except Exception as e:
         print(
