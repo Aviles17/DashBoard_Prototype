@@ -173,7 +173,7 @@ def update_graph_1(n_intervals):
 
     # Obtenemos los datos actualizados para graph1
     df = dt.get_data(working_coin, '15')
-    df = dt.CalculateSupertrend(df)
+    df = dt.CalculateSupertrend(df, 3.215,12)
     df = dt.update_df(df)
     df = df.head(400)
 
