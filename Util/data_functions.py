@@ -281,23 +281,20 @@ def dema(df: pd.DataFrame, length: int = 800, rounded=7):
 '''
 
 
-def CalculateSupertrend(data: pd.DataFrame, mult: int):
+def CalculateSupertrend(data: pd.DataFrame, mult: float, periodo: int):
 
     reversed_df = data.iloc[::-1]
     Temp_Trend = ta.supertrend(
         high=reversed_df['High'],
         low=reversed_df['Low'],
         close=reversed_df['Close'],
-        period=10,
+        period=periodo,
         multiplier=mult)
-    
-    ATR = ta.atr(high=reversed_df['High'], low=reversed_df['Low'], close=reversed_df['Close'], length=14)
 
-    Temp_Trend = Temp_Trend.rename(columns={f'SUPERT_7_{mult}.0': 'Supertrend', f'SUPERTd_7_{mult}.0': 'Polaridad',
-                                   f'SUPERTl_7_{mult}.0': 'ST_Inferior', f'SUPERTs_7_{mult}.0': 'ST_Superior'})
+    Temp_Trend = Temp_Trend.rename(columns={f'SUPERT_7_{mult}': 'Supertrend', f'SUPERTd_7_{mult}': 'Polaridad',
+                                   f'SUPERTl_7_{mult}': 'ST_Inferior', f'SUPERTs_7_{mult}': 'ST_Superior'})
 
     df_merge = pd.merge(data, Temp_Trend, left_index=True, right_index=True)
-    df_merge = pd.merge(df_merge, ATR, left_index=True, right_index=True)
 
     df_merge_ma_final = update_df(df_merge) # Actualizar el dataframe con las medias moviles (EMA , DEMA)
     return df_merge_ma_final
@@ -357,21 +354,21 @@ def get_position(side: str, symbol: str, df: pd.DataFrame):
         return 0, 0, 0, 0
 
 def get_position_history(defined_interval: str = "m"): # 'm' for montly, 'a' for all time
-  timezone = pytz.timezone("Etc/GMT+5")
-  date_origin = datetime(2024,10,27,0,0,0, tzinfo=timezone) # Octubre 23 del 2024
-  utc_date_origin = date_origin.astimezone(pytz.utc)
-  ms_date_origin = int(utc_date_origin.timestamp()*1000)
-  # Convert both to Unix time
-  if defined_interval == "m":
-    start_time = int(time.time() *1000) - (31 * 24 * 60 * 60 * 1000)
-  else:
-    start_time = int(time.time() *1000) - (365 * 24 * 60 * 60 * 1000)
-  if start_time < ms_date_origin:
-    start_time = ms_date_origin
+    timezone = pytz.timezone("Etc/GMT+5")
+    date_origin = datetime(2024,10,27,0,0,0, tzinfo=timezone) # Octubre 23 del 2024
+    utc_date_origin = date_origin.astimezone(pytz.utc)
+    ms_date_origin = int(utc_date_origin.timestamp()*1000)
+    # Convert both to Unix time
+    if defined_interval == "m":
+        start_time = int(time.time() *1000) - (31 * 24 * 60 * 60 * 1000)
+    else:
+        start_time = int(time.time() *1000) - (365 * 24 * 60 * 60 * 1000)
+    if start_time < ms_date_origin:
+        start_time = ms_date_origin
 
     concat_list = []
     # Get the first hsitory of 7 days
-    res = client.get_closed_pnl(category="linear", limit=100)
+    res = client.get_closed_pnl(category="linear",limit=100)
     concat_list.extend(res["result"]["list"])
     endtime = int(res["result"]["list"][-1]["createdTime"])
     try:
