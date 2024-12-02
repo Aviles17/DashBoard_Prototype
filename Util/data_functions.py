@@ -13,7 +13,6 @@ global client, api_key, api_secret
 load_dotenv()
 Api_key = os.getenv("API_KEY")
 Api_secret = os.getenv("API_SECRET")
-print(Api_key, Api_secret)
 client = HTTP(testnet=False, api_key=Api_key, api_secret=Api_secret)
 '''
 ###################################################################################
@@ -362,7 +361,6 @@ def get_position_history(defined_interval: str = "m"): # 'm' for montly, 'a' for
     # Convert both to Unix time
     if defined_interval == "m":
         start_time = int(time.time() *1000) - (31 * 24 * 60 * 60 * 1000)
-        print(start_time)
     else:
         start_time = int(time.time() *1000) - (365 * 24 * 60 * 60 * 1000)
     if start_time < ms_date_origin:
@@ -370,7 +368,7 @@ def get_position_history(defined_interval: str = "m"): # 'm' for montly, 'a' for
 
     concat_list = []
     # Get the first hsitory of 7 days
-    res = client.get_closed_pnl(category="linear")
+    res = client.get_closed_pnl(category="linear",limit=100)
     concat_list.extend(res["result"]["list"])
     endtime = int(res["result"]["list"][-1]["createdTime"])
     try:
@@ -390,7 +388,6 @@ def get_position_history(defined_interval: str = "m"): # 'm' for montly, 'a' for
 
 def get_kpi_history(supported_coins: list):
     history = get_position_history()
-    print(history)
     if len(history) != 0:
         proto_dataframe = []
         for register in history:
