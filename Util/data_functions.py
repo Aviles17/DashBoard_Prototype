@@ -341,7 +341,6 @@ def get_order_info(symb: str):
 def get_position(side: str, symbol: str, df: pd.DataFrame):
     symbol_res = get_order_info(symbol)
     if len(symbol_res) != 0:
-        position = None
         if side == symbol_res["side"] and symbol_res["size"] != 0:
             size = float(symbol_res["size"])
             entry = float(symbol_res["avgPrice"])

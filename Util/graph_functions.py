@@ -55,7 +55,7 @@ def create_order_graph(plot_df: pd.DataFrame, entry: float, stoploss: float, sym
         mode_plot_st = 'markers'
         mode_plot_entry = 'lines'
     else:
-        mode_plot = 'lines'
+        mode_plot_st = 'lines'
         mode_plot_entry = 'lines'
     if(entry != 0 and stoploss != 0):
         fig = go.Figure(data=[go.Candlestick(x=plot_df['Time'],
